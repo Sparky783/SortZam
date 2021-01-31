@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Tools.Utils
@@ -51,6 +52,34 @@ namespace Tools.Utils
         {
             foreach (var file in directory.GetFiles()) file.Delete();
             foreach (var subDirectory in directory.GetDirectories()) subDirectory.Delete(true);
+        }
+
+        /// <summary>
+        /// List all the files for this directory, and sub-directories recursively.
+        /// </summary>
+        /// <param name="directory">Directory to search</param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetAllFiles(this DirectoryInfo directory)
+        {
+            return GetAllFiles(directory.FullName);
+        }
+
+        /// <summary>
+        /// List all the files for this directory, and sub-directories recursively.
+        /// </summary>
+        /// <param name="directory">Directory to search</param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetAllFiles(string directoryPath)
+        {
+            if (string.IsNullOrEmpty(directoryPath) || !Directory.Exists(directoryPath))
+                throw new Exception(string.Format("Can't find directory : '{0}'", directoryPath));
+
+            var result = new List<string>();
+            foreach (var dir in Directory.GetDirectories(directoryPath))
+                result.AddRange(GetAllFiles(dir));
+
+            result.AddRange(Directory.GetFiles(directoryPath));
+            return result;
         }
     }
 }
