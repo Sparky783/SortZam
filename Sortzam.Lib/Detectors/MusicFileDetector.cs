@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sortzam.Lib.DataAccessObjects;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,20 +8,11 @@ using Tools.Utils;
 
 namespace Sortzam.Lib.Detectors
 {
-    public enum MusicFileExtension
-    {
-        mp3 = 0,        // MPEG Audio Layer III
-        wav = 1,        // Waveform Audio File Format
-        wave = 1,       // La vague wesh
-        m4a = 2,        // Apple Lossless Audio Codec
-        flac = 3,       // Free Lossless Audio Codec
-        wma = 4,        // Windows Media Audio
-    }
-    public class MusicDetector
+    public class MusicFileDetector
     {
         private List<string> _extensions { get; set; }
 
-        public MusicDetector(IEnumerable<MusicFileExtension> searchExtensions = null)
+        public MusicFileDetector(IEnumerable<MusicFileExtension> searchExtensions = null)
         {
             var extensions = (searchExtensions?.ToList()) ?? EnumUtils.GetValues<MusicFileExtension>(typeof(MusicFileExtension));
             _extensions = extensions.Select(p => "." + p.ToString()).ToList();
