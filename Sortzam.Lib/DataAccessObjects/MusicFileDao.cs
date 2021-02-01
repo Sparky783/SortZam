@@ -7,6 +7,7 @@ namespace Sortzam.Lib.DataAccessObjects
 {
     public class MusicFileDao : MusicDao
     {
+        public string FileName { get; set; }
         public MusicFileExtension Extension { get; set; }
         public string Path { get; set; }
 
@@ -16,7 +17,9 @@ namespace Sortzam.Lib.DataAccessObjects
             if (string.IsNullOrEmpty(Path) || !FileUtils.Exists(Path))
                 throw new Exception(string.Format("Can't find file : `{0}`", Path));
 
-            var extension = Path.Substring(Path.LastIndexOf('.'));
+            FileName = System.IO.Path.GetFileName(pathFile);
+
+            var extension = Path.Substring(FileName.LastIndexOf('.'));
             MusicFileExtension extensionOut;
             if (Enum.TryParse(extension, true, out extensionOut) && Enum.IsDefined(typeof(MusicFileExtension), extensionOut))
                 Extension = extensionOut;
@@ -30,11 +33,15 @@ namespace Sortzam.Lib.DataAccessObjects
         public void Load()
         {
             var tag = _loadTags();
+            if (!string.IsNullOrEmpty(tag.Artist))
+                Artist = tag.Artist;
+            else Artist = FileName;
+            if (!string.IsNullOrEmpty(tag.Title))
+                Title = tag.Title;
+            else Title = FileName;
             Album = tag.Album;
             Kind = tag.Genre;
-            Artist = tag.Artist;
             Comment = tag.Comment;
-            Title = tag.Title;
             int year;
             if (int.TryParse(tag.Year, out year))
                 Year = year;
