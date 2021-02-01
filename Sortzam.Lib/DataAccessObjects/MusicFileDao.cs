@@ -45,9 +45,6 @@ namespace Sortzam.Lib.DataAccessObjects
             int year;
             if (int.TryParse(tag.Year, out year))
                 Year = year;
-            int trackNumber;
-            if (int.TryParse(tag.Year, out trackNumber))
-                TrackNumber = trackNumber;
         }
 
         /// <summary>
@@ -62,7 +59,6 @@ namespace Sortzam.Lib.DataAccessObjects
             tag.Comment = Comment;
             tag.Title = Title;
             tag.Year = Year?.ToString();
-            tag.TrackNumber = TrackNumber?.ToString();
             tag.Save();
         }
         private SimpleTag _loadTags()
