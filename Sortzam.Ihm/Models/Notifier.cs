@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace FlashLightDMX.Models
+namespace Sortzam.Ihm.Models
 {
     [DataContract]
     public class Notifier : INotifyPropertyChanged, INotifyCollectionChanged
