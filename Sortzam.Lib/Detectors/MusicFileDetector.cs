@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Tools.Utils;
 
 namespace Sortzam.Lib.Detectors
@@ -18,13 +17,14 @@ namespace Sortzam.Lib.Detectors
             _extensions = extensions.Select(p => "." + p.ToString()).ToList();
         }
 
-        public IEnumerable<FileInfo> GetMusicFiles(string directoryPath)
+        public IEnumerable<FileInfo> Search(string directoryPath)
         {
-            if (string.IsNullOrEmpty(directoryPath))
-                throw new Exception("Directory to analyze can't be null or empty");
+            if (string.IsNullOrEmpty(directoryPath) || !Directory.Exists(directoryPath))
+                throw new DirectoryNotFoundException(string.Format("Can't find directory : '{0}'", directoryPath));
             var directory = new DirectoryInfo(directoryPath);
 
-            return directory.GetAllFiles().Where(p => p.ContainsOneOf(_extensions)).Select(p => new FileInfo(p));
+            var files = directory.GetAllFiles().Where(p => p.ContainsOneOf(_extensions)).Select(p => new FileInfo(p));
+            return (files.Count() <= 0) ? null : files;
         }
     }
 }

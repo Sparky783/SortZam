@@ -5,6 +5,7 @@ using Sortzam.Lib.SDK;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Tools.Utils;
 
 namespace Sortzam.Lib.Detectors
 {
@@ -49,14 +50,18 @@ namespace Sortzam.Lib.Detectors
         }
         public IEnumerable<MusicDao> Recognize(string filePath)
         {
+            if (!FileUtils.Exists(filePath))
+                throw new KeyNotFoundException(string.Format("File not found : `{0}`", filePath));
+
+            // TODO : check duration file before start to 30s
             var recognizer = new ACRCloudRecognizer(_configuration);
-            string result = recognizer.RecognizeByFile(filePath, 100);
+            string result = recognizer.RecognizeByFile(filePath, 30);
             dynamic stuff;
             try
             {
                 stuff = JsonConvert.DeserializeObject(result);
             }
-            catch (Exception) { stuff = JsonConvert.DeserializeObject(ACRCloudStatusCode.NO_RESULT); }
+            catch (Exception) { stuff = JsonConvert.DeserializeObject(ACRCloudStatusCode.JSON_ERROR); }
 
             int code;
             try { code = stuff.status.code; } catch (Exception) { code = 1001; }
@@ -70,7 +75,7 @@ namespace Sortzam.Lib.Detectors
                 return null;
 
             // If an  other error occurs
-            Exception(code, stuff?.status?.msg ?? "Unknow Error");
+            Exception(code, stuff?.status?.msg?.ToString());
             return null;
         }
         private IEnumerable<MusicDao> Map(dynamic jsonResult)
@@ -90,7 +95,7 @@ namespace Sortzam.Lib.Detectors
                 3006 => "Invalid parameters",
                 3014 => "Invalid Signature",
                 3015 => "Could not generate fingerprint",
-                _ => defaultMessage,
+                _ => defaultMessage ?? "Unknow Error",
             };
             throw new Exception(error);
         }

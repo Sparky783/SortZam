@@ -72,7 +72,7 @@ namespace Tools.Utils
         public static IEnumerable<string> GetAllFiles(string directoryPath)
         {
             if (string.IsNullOrEmpty(directoryPath) || !Directory.Exists(directoryPath))
-                throw new Exception(string.Format("Can't find directory : '{0}'", directoryPath));
+                throw new DirectoryNotFoundException(string.Format("Can't find directory : '{0}'", directoryPath));
 
             var result = new List<string>();
             foreach (var dir in Directory.GetDirectories(directoryPath))

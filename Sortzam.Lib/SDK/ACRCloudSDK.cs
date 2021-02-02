@@ -256,7 +256,7 @@ namespace Sortzam.Lib.SDK
     {
         public static string HTTP_ERROR = "{\"status\":{\"msg\":\"Http Error\", \"code\":3000}}";
         public static string NO_RESULT = "{\"status\":{\"msg\":\"No Result\", \"code\":1001}}";
-        public static string DECODE_AUDIO_ERROR = "empty";
+        public static string DECODE_AUDIO_ERROR = "{\"status\":{\"msg\":\"Error Audio Decode\", \"code\":4000}}";
         public static string JSON_ERROR = "{\"status\":{\"msg\":\"json error\", \"code\":2002}}";
     }
 
@@ -328,7 +328,7 @@ namespace Sortzam.Lib.SDK
             {
                 fp = this.acrTool.CreateFingerprintByFile(filePath, startSeconds, 12, false);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 //Console.WriteLine(e.ToString());
                 return ACRCloudStatusCode.DECODE_AUDIO_ERROR;
