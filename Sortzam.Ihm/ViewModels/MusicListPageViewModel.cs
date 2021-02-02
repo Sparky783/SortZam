@@ -31,6 +31,11 @@ namespace Sortzam.Ihm.ViewModels
         {
             get; set;
         }
+
+        public MusicDao SelectedMusic
+        {
+            get; set;
+        }
         #endregion
 
         #region Commands
@@ -83,7 +88,7 @@ namespace Sortzam.Ihm.ViewModels
 
         public void OpenFile(MusicItem music)
         {
-            int i = 0;
+            SelectedMusic = new MusicFileDao(music.Path);
         }
     }
 }
