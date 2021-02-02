@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Sortzam.Ihm.Models;
+using Sortzam.Ihm.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -21,6 +23,21 @@ namespace Sortzam.Ihm.Views
         public MusicListPage()
         {
             InitializeComponent();
+        }
+
+        public MusicListPageViewModel ViewModel
+        {
+            get { return (MusicListPageViewModel)Resources["ViewModel"]; }
+        }
+
+        private void projectorList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            List<MusicItem> items = new List<MusicItem>();
+
+            foreach(object i in e.AddedItems)
+                items.Add((MusicItem)i);
+
+            ViewModel.OpenFile((MusicItem)e.AddedItems[0]);
         }
     }
 }

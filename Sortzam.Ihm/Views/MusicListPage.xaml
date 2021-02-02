@@ -34,29 +34,30 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Orientation="Horizontal">
-                <Button Style="{StaticResource SelectionButton}">
+                <Button Style="{StaticResource SelectionButton}" Command="{Binding SelectAllCommand}">
                     Tout sélectionner
                 </Button>
-                <Button Style="{StaticResource SelectionButton}">
+                <Button Style="{StaticResource SelectionButton}" Command="{Binding DeselectAllCommand}">
                     Désélectionner
                 </Button>
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <TextBlock Margin="0,0,15,0" VerticalAlignment="Center" Text="Dossier: ..." />
-                <Button Padding="5" Margin="0,0,15,0" Background="#FF142C61" BorderBrush="{x:Null}">
+                <Button Padding="5" Margin="0,0,15,0" Background="#FF142C61" BorderBrush="{x:Null}" Command="{Binding BrowseCommand}">
                     <mdt:PackIcon Kind="Folder" Foreground="White" />
                 </Button>
             </StackPanel>
         </Grid>
 
-        <DataGrid x:Name="projectorList" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"
-                      CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False"
-                      ItemsSource="{Binding Musics}" HeadersVisibility="Column">
+        <DataGrid x:Name="projectorList" Grid.Row="1" AutoGenerateColumns="False"
+                  CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserSortColumns="False"
+                  ItemsSource="{Binding Musics}" HeadersVisibility="Column"
+                  SelectionChanged="projectorList_SelectionChanged">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="" Width="auto" />
-                <DataGridTextColumn Header="Titre" Binding="{Binding Title}" Width="auto" />
-                <DataGridTextColumn Header="Chemin" Binding="{Binding Path}" Width="1*" />
+                <DataGridCheckBoxColumn Header="" Width="auto" CanUserResize="False" Binding="{Binding IsChecked, Mode=TwoWay}" />
+                <DataGridTextColumn Header="Titre" Binding="{Binding FileName}" Width="auto" IsReadOnly="True" />
+                <DataGridTextColumn Header="Chemin" Binding="{Binding Path}" Width="auto" IsReadOnly="True" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
