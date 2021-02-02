@@ -125,7 +125,7 @@ namespace Sortzam.Tests
         public void Recognize_UnfoundFile()
         {
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "dfeghrtyhrghdfsghdrgfshrh.mp3");
-            Assert.ThrowsException<KeyNotFoundException>(() =>
+            Assert.ThrowsException<FileNotFoundException>(() =>
             {
                 new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(data);
             });
