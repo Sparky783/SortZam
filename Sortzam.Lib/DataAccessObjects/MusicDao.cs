@@ -14,12 +14,14 @@ namespace Sortzam.Lib.DataAccessObjects
         public MusicDao Map(dynamic jsonResult)
         {
             var artist = "";
-            for (var i = 0; i < jsonResult.artists.Count; i++)
-                artist += string.Format("{0}{1}", i == 0 ? "" : " & ", jsonResult.artists[i].name);
+            if (jsonResult.artists != null)
+                for (var i = 0; i < jsonResult.artists.Count; i++)
+                    artist += string.Format("{0}{1}", i == 0 ? "" : " & ", jsonResult.artists[i].name);
 
             var genre = "";
-            for (var i = 0; i < jsonResult.genres.Count; i++)
-                genre += string.Format("{0}{1}", i == 0 ? "" : " & ", jsonResult.genres[i].name);
+            if (jsonResult.genres != null)
+                for (var i = 0; i < jsonResult.genres.Count; i++)
+                    genre += string.Format("{0}{1}", i == 0 ? "" : " & ", jsonResult.genres[i].name);
 
             int year;
             var t = int.TryParse(jsonResult.release_date?.ToString()?.Split('-')[0], out year);
