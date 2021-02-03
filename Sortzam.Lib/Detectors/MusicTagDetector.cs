@@ -5,12 +5,21 @@ using System.Collections.Generic;
 
 namespace Sortzam.Lib.Detectors
 {
+    /// <summary>
+    /// Music Tag ID3 and meta datas loader from CRCloud API
+    /// </summary>
     public class MusicTagDetector
     {
         private readonly string _apiKey;
         private readonly string _apiHost;
         private readonly string _apiSecretKey;
 
+        /// <summary>
+        /// Instance the detector using CRCloud API
+        /// </summary>
+        /// <param name="apiHost">host of CRCloud api</param>
+        /// <param name="apiKey">api Key to authenticate API</param>
+        /// <param name="apiSecretKey">secret Key to authenticate API</param>
         public MusicTagDetector(string apiHost, string apiKey, string apiSecretKey)
         {
             if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(apiHost) || string.IsNullOrEmpty(apiSecretKey))
@@ -25,8 +34,8 @@ namespace Sortzam.Lib.Detectors
         }
 
         /// <summary>
-        /// Recognize by file path of Audio file
-        ///          Audio: mp3, wav, m4a, flac, aac, amr, ape, ogg ...
+        /// Recognize tag ID3 and metas datas music, from an audio file path
+        ///          Audio accepted: mp3, wav, m4a, flac, aac, amr, ape, ogg, wma ...
         /// </summary>
         /// <param name="filePath">path to the audio file</param>
         /// <returns></returns>
