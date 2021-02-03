@@ -88,7 +88,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="0" Text="Titre" Margin="5" />
-                        <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Title}" />
+                        <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Title, Mode=TwoWay}" />
                     </Grid>
 
                     <Grid>
@@ -98,7 +98,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="0" Text="Artist" Margin="5" />
-                        <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Artist}" />
+                        <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Artist, Mode=TwoWay}" />
                     </Grid>
 
                     <Grid>
@@ -108,7 +108,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="0" Text="Année" Margin="5" />
-                        <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Year}" />
+                        <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Year, Mode=TwoWay}" />
                     </Grid>
 
                     <Grid>
@@ -118,27 +118,32 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="0" Text="Genre" Margin="5" />
-                        <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Kind}" />
+                        <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Kind, Mode=TwoWay}" />
                     </Grid>
                 </StackPanel>
 
-                <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
-                    </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="2">
+                    <Button Grid.Column="2" Padding="5" Margin="5,5,5,0" Background="#FF142C61" BorderBrush="{x:Null}" Foreground="White" Command="{Binding ShazamCommand}">
+                        Shazamer
+                    </Button>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Padding="5" Margin="5" Background="#FF142C61" BorderBrush="{x:Null}">
-                        <mdt:PackIcon Kind="ArrowLeft" Foreground="White" />
-                    </Button>
-                    <Button Grid.Column="1" Padding="5" Margin="5" Background="#FF142C61" Foreground="White" BorderBrush="{x:Null}">
-                        Terminer
-                    </Button>
-                    <Button Grid.Column="2" Padding="5" Margin="5" Background="#FF142C61" BorderBrush="{x:Null}">
-                        <mdt:PackIcon Kind="ArrowRight" Foreground="White" />
-                    </Button>
-                </Grid>
+                        <Button Grid.Column="0" Padding="5" Margin="5" Background="#FF142C61" BorderBrush="{x:Null}">
+                            <mdt:PackIcon Kind="ArrowLeft" Foreground="White" />
+                        </Button>
+                        <Button Grid.Column="1" Padding="5" Margin="5" Background="#FF142C61" Foreground="White" BorderBrush="{x:Null}" Command="{Binding FinishCommand}">
+                            Terminer
+                        </Button>
+                        <Button Grid.Column="2" Padding="5" Margin="5" Background="#FF142C61" BorderBrush="{x:Null}">
+                            <mdt:PackIcon Kind="ArrowRight" Foreground="White" />
+                        </Button>
+                    </Grid>
+                </StackPanel>
             </Grid>
         </Grid>
     </Grid>
