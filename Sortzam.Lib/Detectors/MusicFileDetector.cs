@@ -8,7 +8,7 @@ using Tools.Utils;
 namespace Sortzam.Lib.Detectors
 {
     /// <summary>
-    /// Music File Searcher
+    /// Music path File Searcher
     /// </summary>
     public class MusicFileDetector
     {
@@ -29,33 +29,68 @@ namespace Sortzam.Lib.Detectors
         /// </summary>
         /// <param name="directoryPath">path to start research (recursively subdirectories)</param>
         /// <returns></returns>
-        public IEnumerable<FileInfo> SearchPath(string directoryPath)
+        public IEnumerable<FileInfo> SearchInDirectory(string directoryPath)
         {
-            if (string.IsNullOrEmpty(directoryPath) || !Directory.Exists(directoryPath))
-                throw new DirectoryNotFoundException(string.Format("Can't find directory : '{0}'", directoryPath));
-            var directory = new DirectoryInfo(directoryPath);
+            return SearchInDirectories(new List<string>() { directoryPath });
+        }
 
-            var files = directory.GetAllFiles().Where(p => p.ContainsOneOf(_extensions)).Select(p => new FileInfo(p));
+        /// <summary>
+        /// Search for music file path in one or more directories and subdirectories, where the extension is known
+        /// </summary>
+        /// <param name="directoriesPaths"></param>
+        /// <returns></returns>
+        public IEnumerable<FileInfo> SearchInDirectories(IEnumerable<string> directoriesPaths)
+        {
+            if (directoriesPaths == null || directoriesPaths.Any(p => string.IsNullOrEmpty(p)) || directoriesPaths.Any(p => !Directory.Exists(p)))
+                throw new DirectoryNotFoundException("directoriesPaths parameter cannot be null or one of them is not found");
+
+            var files = new List<FileInfo>();
+            foreach (var dir in directoriesPaths)
+            {
+                files.AddRange(new DirectoryInfo(dir).GetAllFiles().Where(p => p.ContainsOneOf(_extensions)).Select(p => new FileInfo(p)));
+            }
             return (files.Count() <= 0) ? null : files;
         }
 
         /// <summary>
-        /// Search for music file in a directory and subdirectories, where the extension is known
+        /// Search for music file path, where the extension is known
         /// </summary>
         /// <param name="directoryPath">path to start research (recursively subdirectories)</param>
         /// <returns></returns>
-        public IEnumerable<MusicFileDao> SearchMusic(string directoryPath)
+        public IEnumerable<FileInfo> SearchFiles(IEnumerable<string> pathFiles)
         {
-            var search = SearchPath(directoryPath);
-            if (search == null)
-                return null;
-            var result = new List<MusicFileDao>();
-            foreach (var i in search.Where(p => p != null && p.Exists))
-            {
-                var music = new MusicFileDao(i.FullName);
-                music.Load();
-                result.Add(music);
-            }
+            if (pathFiles == null)
+                throw new Exception("pathFiles parameter cannot be null");
+
+            var paths = pathFiles.Where(p => !string.IsNullOrEmpty(p) && FileUtils.Exists(p)).ToList();
+            if (paths.Count <= 0)
+                throw new FileNotFoundException(string.Format("Can't find files : '{0}'", paths.ToString(",", false)));
+
+            var files = paths.Where(p => p.ContainsOneOf(_extensions)).Select(p => new FileInfo(p));
+            return (files.Count() <= 0) ? null : files;
+        }
+
+        /// <summary>
+        /// Search for direct music files path or files in a directory and subdirectories, where the extension is known
+        /// </summary>
+        /// <param name="pathsFilesOrDirectories">paths to files or to directories to start research (recursively subdirectories)</param>
+        /// <returns></returns>
+        public IEnumerable<FileInfo> Search(IEnumerable<string> pathsFilesOrDirectories)
+        {
+            if (pathsFilesOrDirectories == null 
+                || pathsFilesOrDirectories.Any(p => string.IsNullOrEmpty(p)) 
+                || pathsFilesOrDirectories.Any(p => !FileUtils.Exists(p) && !Directory.Exists(p)))
+                throw new Exception("pathsFilesOrDirectories parameter cannot be null or empty or inexistent");
+
+            var result = new List<FileInfo>();
+            var directories = pathsFilesOrDirectories.Where(p => File.GetAttributes(p).HasFlag(FileAttributes.Directory));
+            var files = pathsFilesOrDirectories.Where(p => !File.GetAttributes(p).HasFlag(FileAttributes.Directory));
+
+            if (directories != null && directories.Count() > 0)
+                result.AddRange(SearchInDirectories(directories));
+
+            if (files != null && files.Count() > 0)
+                result.AddRange(SearchFiles(files));
             return result;
         }
     }
