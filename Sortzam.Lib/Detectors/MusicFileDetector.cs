@@ -35,7 +35,7 @@ namespace Sortzam.Lib.Detectors
                 throw new DirectoryNotFoundException(string.Format("Can't find directory : '{0}'", directoryPath));
             var directory = new DirectoryInfo(directoryPath);
 
-            var files = directory.GetAllFiles().Where(p => p.ContainsOneOf(_extensions)).Select(p => new FileInfo(p));
+            var files = directory.GetAllFiles().Where(p => Path.GetExtension(p).ContainsOneOf(_extensions)).Select(p => new FileInfo(p));
             return (files.Count() <= 0) ? null : files;
         }
 
