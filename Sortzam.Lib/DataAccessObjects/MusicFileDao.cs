@@ -58,6 +58,21 @@ namespace Sortzam.Lib.DataAccessObjects
             tag.Year = Year?.ToString();
             tag.Save();
         }
+
+        /// <summary>
+        /// Map MusicDao tags into the current MusicFileDao
+        /// </summary>
+        /// <param name="music"></param>
+        public void Map(MusicDao music)
+        {
+            if (music == null) return;
+            this.Album = music.Album;
+            this.Artist = music.Artist;
+            this.Comment = music.Comment;
+            this.Kind = music.Kind;
+            this.Title = music.Title;
+            this.Year = music.Year;
+        }
         private SimpleTag _loadTags()
         {
             return new SimpleTag(Path);

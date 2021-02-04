@@ -71,7 +71,7 @@ namespace Sortzam.Lib.Detectors
         {
             var result = new List<MusicDao>();
             foreach (var i in jsonResult.music)
-                result.Add(new MusicDao().Map(i));
+                result.Add(new MusicDao().MapJson(i));
             return result;
         }
     }

@@ -17,7 +17,7 @@ namespace Sortzam.Lib.DataAccessObjects
         /// </summary>
         /// <param name="jsonResult">json object</param>
         /// <returns></returns>
-        public MusicDao Map(dynamic jsonObject)
+        public MusicDao MapJson(dynamic jsonObject)
         {
             var artist = "";
             if (jsonObject.artists != null)
