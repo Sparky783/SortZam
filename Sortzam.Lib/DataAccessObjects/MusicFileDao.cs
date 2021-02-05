@@ -1,5 +1,6 @@
-﻿using IdSharp.Tagging.SimpleTag;
+﻿using Sortzam.Lib.TagSDK;
 using System;
+using TagLib;
 using Tools.Utils;
 
 namespace Sortzam.Lib.DataAccessObjects
@@ -14,7 +15,7 @@ namespace Sortzam.Lib.DataAccessObjects
         {
             Path = pathFile;
             if (string.IsNullOrEmpty(Path) || !FileUtils.Exists(Path))
-                throw new Exception(string.Format("Can't find file : `{0}`", Path));
+                throw new System.IO.FileNotFoundException(string.Format("Can't find file : `{0}`", Path));
 
             FileName = System.IO.Path.GetFileName(pathFile);
 
@@ -30,18 +31,21 @@ namespace Sortzam.Lib.DataAccessObjects
         /// </summary>
         public void Load()
         {
-            var tag = _loadTags();
-            if (!string.IsNullOrEmpty(tag.Artist))
-                Artist = tag.Artist;
+            var editor = File.Create(Path)?.Tag;
+            if (editor.Performers != null && editor.Performers.Length > 0)
+                Artist = editor.Performers.ToString(" & ", false);
             else Artist = FileName;
-            if (!string.IsNullOrEmpty(tag.Title))
-                Title = tag.Title;
+            if (!string.IsNullOrEmpty(editor.Title))
+                Title = editor.Title;
             else Title = FileName;
-            Album = tag.Album;
-            Kind = tag.Genre;
-            Comment = tag.Comment;
-            if (int.TryParse(tag.Year, out int year))
-                Year = year;
+            if (!string.IsNullOrEmpty(editor.Album))
+                Album = editor.Album;
+            if (editor.Genres != null && editor.Genres.Length > 0)
+                Kind = editor.Genres.ToString(" & ", false);
+            if (!string.IsNullOrEmpty(editor.Comment))
+                Comment = editor.Comment;
+            if (editor.Year > 0)
+                Year = (int)editor.Year;
         }
 
         /// <summary>
@@ -49,14 +53,14 @@ namespace Sortzam.Lib.DataAccessObjects
         /// </summary>
         public void Save()
         {
-            var tag = _loadTags();
-            tag.Album = Album;
-            tag.Genre = Kind;
-            tag.Artist = Artist;
-            tag.Comment = Comment;
-            tag.Title = Title;
-            tag.Year = Year?.ToString();
-            tag.Save();
+            var editor = File.Create(Path);
+            editor.Tag.Performers = Artist?.Split(" & ");
+            editor.Tag.Title = Title;
+            editor.Tag.Album = Album;
+            editor.Tag.Genres = Kind?.Split(" & ");
+            editor.Tag.Comment = Comment;
+            editor.Tag.Year = (uint)(Year ?? 0);
+            editor.Save();
         }
 
         /// <summary>
@@ -72,10 +76,6 @@ namespace Sortzam.Lib.DataAccessObjects
             this.Kind = music.Kind;
             this.Title = music.Title;
             this.Year = music.Year;
-        }
-        private SimpleTag _loadTags()
-        {
-            return new SimpleTag(Path);
         }
     }
 }

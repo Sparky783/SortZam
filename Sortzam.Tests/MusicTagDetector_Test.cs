@@ -42,9 +42,9 @@ namespace Sortzam.Tests
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("Tout le monde danse")));
             Assert.IsTrue(result.Any(p => p.Artist.Contains("Fally Ipupa")));
-            Assert.IsTrue(result.Any(p => p.Album.Contains("Tokooos")));
+            Assert.IsTrue(result.Any(p => p.Album.Contains("110 Hits 2018")));
             Assert.IsTrue(result.Any(p => p.Kind.Contains("Rap")));
-            Assert.IsTrue(result.Any(p => p.Year == 2017));
+            Assert.IsTrue(result.Any(p => p.Year == 2018));
         }
 
         /// <summary>

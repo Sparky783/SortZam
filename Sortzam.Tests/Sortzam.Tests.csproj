@@ -45,6 +45,9 @@
     <None Update="datas\test1.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="datas\test1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="datas\test2.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

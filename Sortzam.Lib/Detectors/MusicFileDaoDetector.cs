@@ -73,8 +73,12 @@ namespace Sortzam.Lib.Detectors
             foreach (var i in pathFiles.Where(p => p != null && p.Exists))
             {
                 var music = new MusicFileDao(i.FullName);
-                music.Load();
-                result.Add(music);
+                try
+                {
+                    music.Load();
+                    result.Add(music);
+                }
+                catch (Exception e) { } // IF metas datas are not foundable or if file is corrupted
             }
             return result;
         }

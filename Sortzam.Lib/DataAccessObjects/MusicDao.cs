@@ -34,10 +34,10 @@ namespace Sortzam.Lib.DataAccessObjects
 
             return new MusicDao()
             {
-                Album = jsonObject.album?.name,
-                Artist = artist,
-                Kind = genre,
-                Title = jsonObject.title,
+                Album = string.IsNullOrEmpty(jsonObject.album?.name?.ToString()) ? null : jsonObject.album?.name?.ToString(),
+                Artist = string.IsNullOrEmpty(artist) ? null : artist,
+                Kind = string.IsNullOrEmpty(genre) ? null : genre,
+                Title = string.IsNullOrEmpty(jsonObject.title?.ToString()) ? null : jsonObject.title?.ToString(),
                 Year = year
             };
         }

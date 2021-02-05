@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Tools.Utils;
 
 namespace Sortzam.Cmd
 {
@@ -29,7 +30,9 @@ namespace Sortzam.Cmd
                     break;
                 }
                 Console.WriteLine("File recognized : " + i.Path);
-                File.Copy(i.Path, i.Path + ".old");
+                var bck = Path.GetFileNameWithoutExtension(i.Path) + "-old" + Path.GetExtension(i.Path);
+                if (!File.Exists(bck))
+                    File.Copy(i.Path, bck);
                 i.Map(tag.First());
                 i.Save();
             }
