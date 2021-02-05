@@ -43,7 +43,7 @@ namespace Sortzam.Lib.Detectors
         {
             // TODO : check duration file before start to 30s
             var recognizer = new ACRCloudRecognizer(_apiHost, _apiKey, _apiSecretKey);
-            var stuff = recognizer.RecognizeByFile(filePath, 30);
+            var stuff = recognizer.RecognizeByFile(filePath, 100);
             var code = int.Parse(stuff.status?.code?.ToString() ?? "0");
 
             // If match and no error code

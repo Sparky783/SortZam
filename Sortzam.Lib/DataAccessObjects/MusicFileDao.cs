@@ -33,7 +33,7 @@ namespace Sortzam.Lib.DataAccessObjects
         {
             var editor = File.Create(Path)?.Tag;
             if (editor.Performers != null && editor.Performers.Length > 0)
-                Artist = editor.Performers.ToString(" & ", false);
+                Artist = editor.Performers.ToString("/", false);
             else Artist = FileName;
             if (!string.IsNullOrEmpty(editor.Title))
                 Title = editor.Title;
@@ -41,7 +41,7 @@ namespace Sortzam.Lib.DataAccessObjects
             if (!string.IsNullOrEmpty(editor.Album))
                 Album = editor.Album;
             if (editor.Genres != null && editor.Genres.Length > 0)
-                Kind = editor.Genres.ToString(" & ", false);
+                Kind = editor.Genres.ToString("/", false);
             if (!string.IsNullOrEmpty(editor.Comment))
                 Comment = editor.Comment;
             if (editor.Year > 0)
@@ -54,10 +54,10 @@ namespace Sortzam.Lib.DataAccessObjects
         public void Save()
         {
             var editor = File.Create(Path);
-            editor.Tag.Performers = Artist?.Split(" & ");
+            editor.Tag.Performers = Artist?.Split("/");
             editor.Tag.Title = Title;
             editor.Tag.Album = Album;
-            editor.Tag.Genres = Kind?.Split(" & ");
+            editor.Tag.Genres = Kind?.Split("/");
             editor.Tag.Comment = Comment;
             editor.Tag.Year = (uint)(Year ?? 0);
             editor.Save();

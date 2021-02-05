@@ -4,10 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-<<<<<<< HEAD
-using Tools.Utils;
-=======
->>>>>>> 7d62e76c69197bf0fc75b776c816f1499e78d562
+using Tools.Comparer;
 
 namespace Sortzam.Cmd
 {
@@ -30,13 +27,30 @@ namespace Sortzam.Cmd
                 if (tag == null || tag.Count() <= 0)
                 {
                     Console.WriteLine("File not recognized : " + i.Path);
-                    break;
+                    continue;
                 }
                 Console.WriteLine("File recognized : " + i.Path);
                 var bck = Path.GetFileNameWithoutExtension(i.Path) + "-old" + Path.GetExtension(i.Path);
                 if (!File.Exists(bck))
                     File.Copy(i.Path, bck);
-                i.Map(tag.First());
+
+                if (tag.Count() == 1)
+                    i.Map(tag.First());
+                else
+                {
+                    int nbMin = int.MaxValue;
+                    MusicDao tagMin = null;
+                    foreach(var j in tag)
+                    {
+                        var nb = LevenshteinDistance.Compute(i.FileName, string.Format("{0} - {1}", j.Artist, j.Title));
+                        if(nb < nbMin)
+                        {
+                            nbMin = nb;
+                            tagMin = j;
+                        }
+                    }
+                    i.Map(tagMin);
+                }
                 i.Save();
             }
         }

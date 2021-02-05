@@ -22,12 +22,12 @@ namespace Sortzam.Lib.DataAccessObjects
             var artist = "";
             if (jsonObject.artists != null)
                 for (var i = 0; i < jsonObject.artists.Count; i++)
-                    artist += string.Format("{0}{1}", i == 0 ? "" : " & ", jsonObject.artists[i].name);
+                    artist += string.Format("{0}{1}", i == 0 ? "" : "/", jsonObject.artists[i].name);
 
             var genre = "";
             if (jsonObject.genres != null)
                 for (var i = 0; i < jsonObject.genres.Count; i++)
-                    genre += string.Format("{0}{1}", i == 0 ? "" : " & ", jsonObject.genres[i].name);
+                    genre += string.Format("{0}{1}", i == 0 ? "" : "/", jsonObject.genres[i].name);
 
             int year;
             var t = int.TryParse(jsonObject.release_date?.ToString()?.Split('-')[0], out year);
