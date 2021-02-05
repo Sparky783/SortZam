@@ -10,10 +10,12 @@ using System.Windows.Input;
 using System.Windows.Forms;
 using System.IO;
 using Sortzam.Lib.Detectors;
+using System.Linq;
+using Tools.Utils;
 
 namespace Sortzam.Ihm.ViewModels
 {
-    public class MusicListPageViewModel: Notifier
+    public class MusicListPageViewModel : Notifier
     {
         public MusicListPageViewModel()
         {
@@ -61,27 +63,23 @@ namespace Sortzam.Ihm.ViewModels
         private void Browse()
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            
-            if(fbd.ShowDialog() == DialogResult.OK)
+
+            if (fbd.ShowDialog() == DialogResult.OK)
             {
                 FolderPath = fbd.SelectedPath;
-                string[] files = Directory.GetFiles(FolderPath);
+                // Load path files and metas for each
+                var files = new MusicFileDaoDetector().SearchInDirectory(FolderPath);
                 Musics.Clear();
 
-                foreach (string filePath in files)
+                var musicFiles = files.Select(p => new MusicItem()
                 {
-                    string extension = Path.GetExtension(filePath).Remove(0, 1);
-                    MusicFileExtension extensionOut;
+                    FileName = p.FileName,
+                    Path = p.Path,
+                    File = p
+                });
+                foreach (var file in musicFiles)
+                    Musics.Add(file);
 
-                    if (Enum.TryParse(extension, true, out extensionOut) && Enum.IsDefined(typeof(MusicFileExtension), extensionOut))
-                    {
-                        MusicItem musicItem = new MusicItem();
-                        musicItem.FileName = Path.GetFileName(filePath);
-                        musicItem.Path = filePath;
-
-                        Musics.Add(musicItem);
-                    }
-                }
             }
         }
 
