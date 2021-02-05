@@ -73,7 +73,7 @@ namespace Sortzam.Tests
             var result = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(data);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("In Your Eyes")));
-            Assert.IsTrue(result.Any(p => p.Artist.Contains("Alida & Robin Schulz")));
+            Assert.IsTrue(result.Any(p => p.Artist.Contains("Alida/Robin Schulz")));
             Assert.IsTrue(result.Any(p => p.Album.Contains("In Your Eyes")));
             Assert.IsTrue(result.Any(p => p.Year == 2020));
         }
