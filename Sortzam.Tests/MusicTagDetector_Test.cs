@@ -42,9 +42,9 @@ namespace Sortzam.Tests
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("Tout le monde danse")));
             Assert.IsTrue(result.Any(p => p.Artist.Contains("Fally Ipupa")));
-            Assert.IsTrue(result.Any(p => p.Album.Contains("Tokooos")));
+            Assert.IsTrue(result.Any(p => p.Album.Contains("Tout le monde danse")));
             Assert.IsTrue(result.Any(p => p.Kind.Contains("Rap")));
-            Assert.IsTrue(result.Any(p => p.Year == 2017));
+            Assert.IsTrue(result.Any(p => p.Year == 0));
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Sortzam.Tests
             var result = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(data);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("In Your Eyes")));
-            Assert.IsTrue(result.Any(p => p.Artist.Contains("Alida & Robin Schulz")));
+            Assert.IsTrue(result.Any(p => p.Artist.Contains("Alida/Robin Schulz")));
             Assert.IsTrue(result.Any(p => p.Album.Contains("In Your Eyes")));
             Assert.IsTrue(result.Any(p => p.Year == 2020));
         }

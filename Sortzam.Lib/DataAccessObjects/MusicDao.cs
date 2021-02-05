@@ -17,27 +17,27 @@ namespace Sortzam.Lib.DataAccessObjects
         /// </summary>
         /// <param name="jsonResult">json object</param>
         /// <returns></returns>
-        public MusicDao Map(dynamic jsonObject)
+        public MusicDao MapJson(dynamic jsonObject)
         {
             var artist = "";
             if (jsonObject.artists != null)
                 for (var i = 0; i < jsonObject.artists.Count; i++)
-                    artist += string.Format("{0}{1}", i == 0 ? "" : " & ", jsonObject.artists[i].name);
+                    artist += string.Format("{0}{1}", i == 0 ? "" : "/", jsonObject.artists[i].name);
 
             var genre = "";
             if (jsonObject.genres != null)
                 for (var i = 0; i < jsonObject.genres.Count; i++)
-                    genre += string.Format("{0}{1}", i == 0 ? "" : " & ", jsonObject.genres[i].name);
+                    genre += string.Format("{0}{1}", i == 0 ? "" : "/", jsonObject.genres[i].name);
 
             int year;
             var t = int.TryParse(jsonObject.release_date?.ToString()?.Split('-')[0], out year);
 
             return new MusicDao()
             {
-                Album = jsonObject.album?.name,
-                Artist = artist,
-                Kind = genre,
-                Title = jsonObject.title,
+                Album = string.IsNullOrEmpty(jsonObject.album?.name?.ToString()) ? null : jsonObject.album?.name?.ToString(),
+                Artist = string.IsNullOrEmpty(artist) ? null : artist,
+                Kind = string.IsNullOrEmpty(genre) ? null : genre,
+                Title = string.IsNullOrEmpty(jsonObject.title?.ToString()) ? null : jsonObject.title?.ToString(),
                 Year = year
             };
         }
