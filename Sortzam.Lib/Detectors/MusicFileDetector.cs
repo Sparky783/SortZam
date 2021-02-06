@@ -47,7 +47,7 @@ namespace Sortzam.Lib.Detectors
             var files = new List<FileInfo>();
             foreach (var dir in directoriesPaths)
             {
-                files.AddRange(new DirectoryInfo(dir).GetAllFiles().Where(p => Path.GetExtension(p).ContainsOneOf(_extensions)).Select(p => new FileInfo(p)));
+                files.AddRange(new DirectoryInfo(dir).GetAllFiles().Where(p => _extensions.Any(p.ToLower().EndsWith)).Select(p => new FileInfo(p)));
             }
             return (files.Count() <= 0) ? null : files;
         }

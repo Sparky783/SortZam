@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Tools.Utils
 {
@@ -59,27 +60,23 @@ namespace Tools.Utils
         /// </summary>
         /// <param name="directory">Directory to search</param>
         /// <returns></returns>
-        public static IEnumerable<string> GetAllFiles(this DirectoryInfo directory)
+        public static IEnumerable<string> GetAllFiles(this DirectoryInfo directory, string pattern = "*")
         {
-            return GetAllFiles(directory.FullName);
+            return directory.GetFiles(pattern, SearchOption.AllDirectories).Select(p => p.FullName);
         }
 
         /// <summary>
         /// List all the files for this directory, and sub-directories recursively.
         /// </summary>
         /// <param name="directory">Directory to search</param>
+        /// <param name="pattern">Pattern to search files in directories</param>
         /// <returns></returns>
-        public static IEnumerable<string> GetAllFiles(string directoryPath)
+        public static IEnumerable<string> GetAllFiles(string directoryPath, string pattern = "*")
         {
             if (string.IsNullOrEmpty(directoryPath) || !Directory.Exists(directoryPath))
                 throw new DirectoryNotFoundException(string.Format("Can't find directory : '{0}'", directoryPath));
 
-            var result = new List<string>();
-            foreach (var dir in Directory.GetDirectories(directoryPath))
-                result.AddRange(GetAllFiles(dir));
-
-            result.AddRange(Directory.GetFiles(directoryPath));
-            return result;
+            return GetAllFiles(new DirectoryInfo(directoryPath), pattern);
         }
     }
 }
