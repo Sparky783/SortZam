@@ -56,16 +56,47 @@
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
 
-            <DataGrid x:Name="projectorList" Grid.Column="0" AutoGenerateColumns="False"
-                  CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False"
-                  ItemsSource="{Binding Musics}" HeadersVisibility="Column"
-                  SelectionChanged="projectorList_SelectionChanged">
-                
-                <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Header="" Width="auto" CanUserResize="False" Binding="{Binding IsChecked, Mode=TwoWay}" />
-                    <DataGridTextColumn Header="Titre" Binding="{Binding FileName}" Width="1*" IsReadOnly="True" />
-                </DataGrid.Columns>
-            </DataGrid>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <DataGrid Grid.Row="0" x:Name="projectorList" AutoGenerateColumns="False"
+                            CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False"
+                            ItemsSource="{Binding Musics}" HeadersVisibility="Column"
+                            SelectionChanged="projectorList_SelectionChanged">
+
+                    <DataGrid.Columns>
+                        <DataGridCheckBoxColumn Header="" Width="auto" CanUserResize="False" Binding="{Binding IsChecked, Mode=TwoWay}" />
+                        <DataGridTextColumn Header="Titre" Binding="{Binding FileName}" Width="1*" IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <GroupBox Grid.Row="1" Header="Rechercher">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0" Padding="5" Margin="0,0,5,0" Background="#FF142C61" BorderBrush="{x:Null}" Foreground="White" Command="{Binding AnalyzeAllCommand}">
+                            Analyser tout
+                        </Button>
+
+                        <ProgressBar Grid.Column="1" Value="{Binding PercentProgress}" />
+
+                        <TextBlock Grid.Column="2" VerticalAlignment="Center">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat=" {0}%">
+                                    <Binding Path="PercentProgress"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Grid>
+                </GroupBox>
+            </Grid>
 
             <Grid x:Name="musicData" Grid.Column="1" Background="White">
                 <Grid.RowDefinitions>
@@ -78,9 +109,7 @@
                     <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="Black" />
                 </Grid.Effect>
 
-                <TextBlock Grid.Row="0" Text="1 sur 3000" Padding="50,15" TextAlignment="Center" />
-
-                <StackPanel Grid.Row="1">
+                <StackPanel Grid.Row="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="45" />
@@ -122,28 +151,46 @@
                     </Grid>
                 </StackPanel>
 
-                <StackPanel Grid.Row="2">
-                    <Button Grid.Column="2" Padding="5" Margin="5,5,5,0" Background="#FF142C61" BorderBrush="{x:Null}" Foreground="White" Command="{Binding ShazamCommand}">
-                        Shazamer
-                    </Button>
+                <GroupBox Grid.Row="1" Header="Rechercher" Margin="5,0">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="1*" />
-                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
 
-                        <Button Grid.Column="0" Padding="5" Margin="5" Background="#FF142C61" BorderBrush="{x:Null}">
-                            <mdt:PackIcon Kind="ArrowLeft" Foreground="White" />
-                        </Button>
-                        <Button Grid.Column="1" Padding="5" Margin="5" Background="#FF142C61" Foreground="White" BorderBrush="{x:Null}" Command="{Binding FinishCommand}">
-                            Terminer
-                        </Button>
-                        <Button Grid.Column="2" Padding="5" Margin="5" Background="#FF142C61" BorderBrush="{x:Null}">
-                            <mdt:PackIcon Kind="ArrowRight" Foreground="White" />
+                        <DataGrid x:Name="resultsList" Grid.Row="0" AutoGenerateColumns="False"
+                            CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False"
+                            ItemsSource="{Binding SelectedMusic.Results}" HeadersVisibility="Column"
+                            SelectionChanged="resultsList_SelectionChanged">
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Résultats" Binding="{Binding Title}" Width="1*" IsReadOnly="True" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Button Grid.Row="1" Padding="5" Margin="0,5,0,0" Background="#FF142C61" BorderBrush="{x:Null}" Foreground="White" Command="{Binding ShazamCommand}">
+                            Analyser
                         </Button>
                     </Grid>
-                </StackPanel>
+                </GroupBox>
+
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Padding="5" Margin="5" Background="#FF142C61" BorderBrush="{x:Null}">
+                        <mdt:PackIcon Kind="ArrowLeft" Foreground="White" />
+                    </Button>
+                    <Button Grid.Column="1" Padding="5" Margin="5" Background="#FF142C61" Foreground="White" BorderBrush="{x:Null}" Command="{Binding FinishCommand}">
+                        Terminer
+                    </Button>
+                    <Button Grid.Column="2" Padding="5" Margin="5" Background="#FF142C61" BorderBrush="{x:Null}">
+                        <mdt:PackIcon Kind="ArrowRight" Foreground="White" />
+                    </Button>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>

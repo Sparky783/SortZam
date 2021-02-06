@@ -1,5 +1,6 @@
 ﻿using Sortzam.Ihm.Models;
 using Sortzam.Ihm.ViewModels;
+using Sortzam.Lib.DataAccessObjects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,12 +33,14 @@ namespace Sortzam.Ihm.Views
 
         private void projectorList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            List<MusicItem> items = new List<MusicItem>();
+            if(e.AddedItems.Count > 0)
+                ViewModel.SelectFile((MusicItem)e.AddedItems[0]);
+        }
 
-            foreach(object i in e.AddedItems)
-                items.Add((MusicItem)i);
-
-            ViewModel.OpenFile((MusicItem)e.AddedItems[0]);
+        private void resultsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0)
+                ViewModel.SelectResult((MusicDao)e.AddedItems[0]);
         }
     }
 }

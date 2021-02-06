@@ -12,11 +12,18 @@ using System.IO;
 using Sortzam.Lib.Detectors;
 using System.Linq;
 using Tools.Utils;
+using System.Threading.Tasks;
 
 namespace Sortzam.Ihm.ViewModels
 {
+    /// <summary>
+    /// Class used to be bind with the main view.
+    /// </summary>
     public class MusicListPageViewModel : Notifier
     {
+        /// <summary>
+        /// Constructor - Init display properties.
+        /// </summary>
         public MusicListPageViewModel()
         {
             Musics = new ObservableCollection<MusicItem>();
@@ -26,19 +33,45 @@ namespace Sortzam.Ihm.ViewModels
         }
 
         #region Properties
+        /// <summary>
+        /// List of musics display for the user.
+        /// </summary>
         public ObservableCollection<MusicItem> Musics
         {
             get; set;
         }
 
+        /// <summary>
+        /// Folder chosen by the user.
+        /// </summary>
         public string FolderPath
         {
             get; set;
         }
 
+        private MusicItem selectedMusic;
+        /// <summary>
+        /// Current selected music display on the side HMI.
+        /// </summary>
         public MusicItem SelectedMusic
         {
-            get; set;
+            get { return selectedMusic; }
+            set
+            {
+                selectedMusic = value;
+                OnPropertyChanged("SelectedMusic");
+            }
+        }
+
+        private double percentProgress;
+        public double PercentProgress
+        {
+            get { return percentProgress; }
+            set
+            {
+                percentProgress = Math.Round(value, 2);
+                OnPropertyChanged("PercentProgress");
+            }
         }
         #endregion
 
@@ -47,19 +80,27 @@ namespace Sortzam.Ihm.ViewModels
         public ICommand SelectAllCommand { get; private set; }
         public ICommand DeselectAllCommand { get; private set; }
         public ICommand FinishCommand { get; private set; }
-        public ICommand ShazamCommand { get; private set; }
+        public ICommand AnalyzeCommand { get; private set; }
+        public ICommand AnalyzeAllCommand { get; private set; }
 
+        /// <summary>
+        /// Prepare commands for all buttons
+        /// </summary>
         private void InitCommands()
         {
             BrowseCommand = new RelayCommand(x => { Browse(); });
             SelectAllCommand = new RelayCommand(x => { SelectAll(true); });
             DeselectAllCommand = new RelayCommand(x => { SelectAll(false); });
             FinishCommand = new RelayCommand(x => { SaveFile(); });
-            ShazamCommand = new RelayCommand(x => { RunShazam(); });
+            AnalyzeCommand = new RelayCommand(x => { Analyse(); });
+            AnalyzeAllCommand = new RelayCommand(x => { AnalyseAll(); });
         }
         #endregion
 
         #region Button Methods
+        /// <summary>
+        /// Ask to the user to chose a folder and display content. Subfolders are also displayed. 
+        /// </summary>
         private void Browse()
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
@@ -67,52 +108,126 @@ namespace Sortzam.Ihm.ViewModels
             if (fbd.ShowDialog() == DialogResult.OK)
             {
                 FolderPath = fbd.SelectedPath;
-                // Load path files and metas for each
-                var files = new MusicFileDaoDetector().SearchInDirectory(FolderPath);
+                IEnumerable<MusicFileDao> files = new MusicFileDaoDetector().SearchInDirectory(FolderPath); // Load path files and metas for each
                 Musics.Clear();
 
-                var musicFiles = files.Select(p => new MusicItem()
+                IEnumerable<MusicItem> musicFiles = files.Select(p => new MusicItem()
                 {
                     FileName = p.FileName,
                     Path = p.Path,
                     File = p
                 });
-                foreach (var file in musicFiles)
-                    Musics.Add(file);
 
+                foreach(MusicItem file in musicFiles)
+                    Musics.Add(file);
             }
         }
 
+        /// <summary>
+        /// Check or Uncheck all files on the display. 
+        /// </summary>
+        /// <param name="value"></param>
         private void SelectAll(bool value)
         {
             foreach (MusicItem music in Musics)
                 music.IsChecked = value;
         }
 
+        /// <summary>
+        /// Save updates into the file.
+        /// </summary>
         private void SaveFile()
         {
             SelectedMusic.Save();
         }
 
-        private void RunShazam()
+        /// <summary>
+        /// Launch the analyze function for one file and display results.
+        /// </summary>
+        private void Analyse()
         {
-            //TODO : delete Secretkey from here
-            string apiHost = "identify-eu-west-1.acrcloud.com";
-            string apiKey = "ca88123807e49300eaea0fb9441c1bde";
-            string secretKey = "ri9MAp8fXzEXu300Apch3Qj74Hadz2XiJbr9izox";
-            List<MusicDao> result = (List<MusicDao>)new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(SelectedMusic.Path);
+            if (!string.IsNullOrEmpty(SelectedMusic.Path))
+            {
+                new Task(() =>
+                {
+                    //TODO : delete Secretkey from here
+                    string apiHost = "identify-eu-west-1.acrcloud.com";
+                    string apiKey = "ca88123807e49300eaea0fb9441c1bde";
+                    string secretKey = "ri9MAp8fXzEXu300Apch3Qj74Hadz2XiJbr9izox";
+                    IEnumerable<MusicDao> results = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(SelectedMusic.Path);
 
+                    if (results != null)
+                    {
+                        foreach (MusicDao result in results)
+                            SelectedMusic.Results.Add(result);
+                    }
+                }).Start();
+            }
+        }
 
-            MessageBox.Show($"{result.Count} musiques trouvées");
-            //SelectedMusic.File.
+        /// <summary>
+        /// Launch the analyze function for all files.
+        /// </summary>
+        private void AnalyseAll()
+        {
+            int nbMusics = Musics.Count;
+
+            if (nbMusics > 0)
+            {
+                new Task(() =>
+                {
+                    double nbAnalysed = 0;
+
+                    foreach (MusicItem music in Musics)
+                    {
+                        //TODO : delete Secretkey from here
+                        string apiHost = "identify-eu-west-1.acrcloud.com";
+                        string apiKey = "ca88123807e49300eaea0fb9441c1bde";
+                        string secretKey = "ri9MAp8fXzEXu300Apch3Qj74Hadz2XiJbr9izox";
+
+                        IEnumerable<MusicDao> results = null;
+                        try
+                        {
+                            results = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(music.Path);
+                        }
+                        catch { }
+
+                        nbAnalysed++;
+                        PercentProgress = nbAnalysed / nbMusics * 100;
+
+                        if (results != null)
+                        {
+                            foreach (MusicDao result in results)
+                                music.Results.Add(result);
+                        }
+                    }
+                }).Start();
+            }
         }
         #endregion
 
-        public void OpenFile(MusicItem music)
+        /// <summary>
+        /// Display the file selected by the user.
+        /// </summary>
+        /// <param name="music"></param>
+        public void SelectFile(MusicItem music)
         {
-            SelectedMusic.Path = music.Path;
-            SelectedMusic.FileName = music.FileName;
-            SelectedMusic.LoadFromMusicFileDao(new MusicFileDao(music.Path));
+            SelectedMusic = music;
+            SelectedMusic.LoadFromMusicFileDao();
+        }
+
+        /// <summary>
+        /// Display the file selected by the user.
+        /// </summary>
+        /// <param name="music"></param>
+        public void SelectResult(MusicDao music)
+        {
+            SelectedMusic.Title = music.Title;
+            SelectedMusic.Artist = music.Artist;
+            SelectedMusic.Album = music.Album;
+            SelectedMusic.Kind = music.Kind;
+            SelectedMusic.Year = music.Year;
+            SelectedMusic.Comment = music.Comment;
         }
     }
 }

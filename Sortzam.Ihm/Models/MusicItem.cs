@@ -1,31 +1,36 @@
 ﻿using Sortzam.Lib.DataAccessObjects;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 namespace Sortzam.Ihm.Models
 {
+    /// <summary>
+    /// Object to display a music file.
+    /// </summary>
     public class MusicItem : Notifier
     {
-        /*public MusicItem()
+        public MusicItem()
         {
-            File = null;
-            FileName = "";
-            Path = "";
-            Title = "";
-            Artist = "";
-            Album = "";
-            Kind = "";
-            Comment = "";
-            Year = 0;
-        }*/
+            Results = new ObservableCollection<MusicDao>();
+        }
 
         #region Properties
+        /// <summary>
+        /// File name displayed.
+        /// </summary>
         public string FileName { get; set; }
 
+        /// <summary>
+        /// File Path
+        /// </summary>
         public string Path { get; set; }
 
         private MusicFileDao file;
+        /// <summary>
+        /// File managed by this class. 
+        /// </summary>
         public MusicFileDao File
         {
             get { return file; }
@@ -42,6 +47,9 @@ namespace Sortzam.Ihm.Models
             }
         }
 
+        /// <summary>
+        /// Music title.
+        /// </summary>
         public string Title
         {
             get
@@ -60,6 +68,9 @@ namespace Sortzam.Ihm.Models
             }
         }
 
+        /// <summary>
+        /// Music artist
+        /// </summary>
         public string Artist
         {
             get
@@ -78,6 +89,9 @@ namespace Sortzam.Ihm.Models
             }
         }
 
+        /// <summary>
+        /// Kind of the music
+        /// </summary>
         public string Kind
         {
             get
@@ -96,6 +110,9 @@ namespace Sortzam.Ihm.Models
             }
         }
 
+        /// <summary>
+        /// Music album
+        /// </summary>
         public string Album
         {
             get
@@ -114,6 +131,9 @@ namespace Sortzam.Ihm.Models
             }
         }
 
+        /// <summary>
+        /// Music comments
+        /// </summary>
         public string Comment
         {
             get
@@ -132,6 +152,9 @@ namespace Sortzam.Ihm.Models
             }
         }
 
+        /// <summary>
+        /// Music year
+        /// </summary>
         public int? Year
         {
             get
@@ -151,6 +174,9 @@ namespace Sortzam.Ihm.Models
         }
 
         private bool isChecked;
+        /// <summary>
+        /// Say if the music is checked or not by the user.
+        /// </summary>
         public bool IsChecked
         {
             get { return isChecked; }
@@ -160,14 +186,33 @@ namespace Sortzam.Ihm.Models
                 OnPropertyChanged("IsChecked");
             }
         }
+
+        private ObservableCollection<MusicDao> results;
+        public ObservableCollection<MusicDao> Results
+        {
+            get { return results; }
+            set
+            {
+                results = value;
+                OnPropertyChanged("Results");
+            }
+        }
         #endregion
 
         #region Methods
-        public void LoadFromMusicFileDao(MusicFileDao file)
+        /// <summary>
+        /// Bind MusicDaoFile to the displayed item.
+        /// </summary>
+        /// <param name="file"></param>
+        public void LoadFromMusicFileDao()
         {
-            File = file;
+            if(!string.IsNullOrEmpty(Path))
+                File = new MusicFileDao(Path);
         }
 
+        /// <summary>
+        /// Save changes in the binded file.
+        /// </summary>
         public void Save()
         {
             if (file != null)
