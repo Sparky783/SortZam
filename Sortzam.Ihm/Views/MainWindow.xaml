@@ -46,7 +46,7 @@
         
         <Grid x:Name="MainMenu" Width="60" HorizontalAlignment="Left" Background="#FF142C61">
             <Grid.Effect>
-                <DropShadowEffect BlurRadius="2" ShadowDepth="1" Color="#FFAEAEAE"/>
+                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#FF646464"/>
             </Grid.Effect>
             
             <StackPanel>
