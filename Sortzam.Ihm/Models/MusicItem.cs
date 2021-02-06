@@ -206,7 +206,7 @@ namespace Sortzam.Ihm.Models
         /// <param name="file"></param>
         public void LoadFromMusicFileDao()
         {
-            if(!string.IsNullOrEmpty(Path))
+            if(!string.IsNullOrEmpty(Path) && File == null)
                 File = new MusicFileDao(Path);
         }
 
