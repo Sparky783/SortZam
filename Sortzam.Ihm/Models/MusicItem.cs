@@ -11,6 +11,13 @@ namespace Sortzam.Ihm.Models
     /// </summary>
     public class MusicItem : Notifier
     {
+        private string initialTitle;
+        private string initialAlbum;
+        private string initialArtist;
+        private string initialKind;
+        private string initialComment;
+        private int? initialYear;
+
         public MusicItem()
         {
             Results = new ObservableCollection<MusicDao>();
@@ -38,6 +45,14 @@ namespace Sortzam.Ihm.Models
             {
                 file = value;
                 file.Load();
+
+                initialTitle = file.Title;
+                initialAlbum = file.Album;
+                initialArtist = file.Artist;
+                initialKind = file.Kind;
+                initialComment = file.Comment;
+                initialYear = file.Year;
+
                 OnPropertyChanged("Title");
                 OnPropertyChanged("Artist");
                 OnPropertyChanged("Kind");
@@ -217,6 +232,19 @@ namespace Sortzam.Ihm.Models
         {
             if (file != null)
                 file.Save();
+        }
+
+        /// <summary>
+        /// Restore file metadata.
+        /// </summary>
+        public void Restore()
+        {
+            Title = initialTitle;
+            Album = initialAlbum;
+            Artist = initialArtist;
+            Kind = initialKind;
+            Comment = initialComment;
+            Year = initialYear;
         }
         #endregion
     }

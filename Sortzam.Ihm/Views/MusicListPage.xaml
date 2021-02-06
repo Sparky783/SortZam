@@ -73,7 +73,7 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <GroupBox Grid.Row="1" Header="Rechercher">
+                <GroupBox Grid.Row="1" Header="Rechercher" Margin="5">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
@@ -109,49 +109,61 @@
                     <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="Black" />
                 </Grid.Effect>
 
-                <StackPanel Grid.Row="0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="45" />
-                            <ColumnDefinition Width="1*" />
-                        </Grid.ColumnDefinitions>
+                <GroupBox Grid.Row="0" Header="Fichier" Margin="5,5,5,0">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5,5,5,0">
+                            <Button Padding="5" Margin="0,0,5,0" Background="#FF142C61" BorderBrush="{x:Null}" Command="{Binding SaveCommand}">
+                                <mdt:PackIcon Kind="ContentSave" Foreground="White" />
+                            </Button>
 
-                        <TextBlock Grid.Column="0" Text="Titre" Margin="5" />
-                        <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Title, Mode=TwoWay}" />
-                    </Grid>
+                            <Button Padding="5" Margin="0,0,5,0" Background="#FF142C61" BorderBrush="{x:Null}" Command="{Binding RestoreCommand}">
+                                <mdt:PackIcon Kind="Restore" Foreground="White" />
+                            </Button>
+                        </StackPanel>
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="45" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
 
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="45" />
-                            <ColumnDefinition Width="1*" />
-                        </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Titre" Margin="5" />
+                            <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Title, Mode=TwoWay}" />
+                        </Grid>
 
-                        <TextBlock Grid.Column="0" Text="Artist" Margin="5" />
-                        <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Artist, Mode=TwoWay}" />
-                    </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="45" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
 
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="45" />
-                            <ColumnDefinition Width="1*" />
-                        </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Artist" Margin="5" />
+                            <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Artist, Mode=TwoWay}" />
+                        </Grid>
 
-                        <TextBlock Grid.Column="0" Text="Année" Margin="5" />
-                        <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Year, Mode=TwoWay}" />
-                    </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="45" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
 
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="45" />
-                            <ColumnDefinition Width="1*" />
-                        </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Année" Margin="5" />
+                            <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Year, Mode=TwoWay}" />
+                        </Grid>
 
-                        <TextBlock Grid.Column="0" Text="Genre" Margin="5" />
-                        <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Kind, Mode=TwoWay}" />
-                    </Grid>
-                </StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="45" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
 
-                <GroupBox Grid.Row="1" Header="Rechercher" Margin="5,0">
+                            <TextBlock Grid.Column="0" Text="Genre" Margin="5" />
+                            <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Kind, Mode=TwoWay}" />
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Grid.Row="1" Header="Rechercher" Margin="5,0" Padding="5">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="1*" />
@@ -168,7 +180,7 @@
                             </DataGrid.Columns>
                         </DataGrid>
 
-                        <Button Grid.Row="1" Padding="5" Margin="0,5,0,0" Background="#FF142C61" BorderBrush="{x:Null}" Foreground="White" Command="{Binding ShazamCommand}">
+                        <Button Grid.Row="1" Padding="5" Margin="0,5,0,0" Background="#FF142C61" BorderBrush="{x:Null}" Foreground="White" Command="{Binding AnalyzeCommand}">
                             Analyser
                         </Button>
                     </Grid>
@@ -177,17 +189,17 @@
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Padding="5" Margin="5" Background="#FF142C61" BorderBrush="{x:Null}">
+                    <Button Grid.Column="0" Padding="5" Margin="5" Background="#FF142C61" BorderBrush="{x:Null}" Command="{Binding PreviousFileCommand}">
                         <mdt:PackIcon Kind="ArrowLeft" Foreground="White" />
                     </Button>
-                    <Button Grid.Column="1" Padding="5" Margin="5" Background="#FF142C61" Foreground="White" BorderBrush="{x:Null}" Command="{Binding FinishCommand}">
-                        Terminer
+                    <Button Grid.Column="1" Padding="5" Margin="0,5" Background="#FF142C61" Foreground="White" BorderBrush="{x:Null}" Command="{Binding SaveAllCommand}">
+                        <mdt:PackIcon Kind="ContentSaveAll" Foreground="White" />
                     </Button>
-                    <Button Grid.Column="2" Padding="5" Margin="5" Background="#FF142C61" BorderBrush="{x:Null}">
+                    <Button Grid.Column="2" Padding="5" Margin="5" Background="#FF142C61" BorderBrush="{x:Null}" Command="{Binding NextFileCommand}">
                         <mdt:PackIcon Kind="ArrowRight" Foreground="White" />
                     </Button>
                 </Grid>

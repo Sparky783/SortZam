@@ -13,6 +13,7 @@ using Sortzam.Lib.Detectors;
 using System.Linq;
 using Tools.Utils;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace Sortzam.Ihm.ViewModels
 {
@@ -79,7 +80,11 @@ namespace Sortzam.Ihm.ViewModels
         public ICommand BrowseCommand { get; private set; }
         public ICommand SelectAllCommand { get; private set; }
         public ICommand DeselectAllCommand { get; private set; }
-        public ICommand FinishCommand { get; private set; }
+        public ICommand SaveCommand { get; private set; }
+        public ICommand SaveAllCommand { get; private set; }
+        public ICommand RestoreCommand { get; private set; }
+        public ICommand PreviousFileCommand { get; private set; }
+        public ICommand NextFileCommand { get; private set; }
         public ICommand AnalyzeCommand { get; private set; }
         public ICommand AnalyzeAllCommand { get; private set; }
 
@@ -91,7 +96,11 @@ namespace Sortzam.Ihm.ViewModels
             BrowseCommand = new RelayCommand(x => { Browse(); });
             SelectAllCommand = new RelayCommand(x => { SelectAll(true); });
             DeselectAllCommand = new RelayCommand(x => { SelectAll(false); });
-            FinishCommand = new RelayCommand(x => { SaveFile(); });
+            SaveCommand = new RelayCommand(x => { SaveFile(); });
+            SaveAllCommand = new RelayCommand(x => { SaveAllFiles(); });
+            RestoreCommand = new RelayCommand(x => { Restore(); });
+            PreviousFileCommand = new RelayCommand(x => { PreviousFile(); });
+            NextFileCommand = new RelayCommand(x => { NextFile(); });
             AnalyzeCommand = new RelayCommand(x => { Analyse(); });
             AnalyzeAllCommand = new RelayCommand(x => { AnalyseAll(); });
         }
@@ -142,26 +151,73 @@ namespace Sortzam.Ihm.ViewModels
         }
 
         /// <summary>
+        /// Save metadata for each files
+        /// </summary>
+        private void SaveAllFiles()
+        {
+            foreach(MusicItem music in Musics)
+                music.Save();
+
+            MessageBox.Show("Tous les fichiers ont étés sauvegardés.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Restore previous values for metadata.
+        /// </summary>
+        private void Restore()
+        {
+            SelectedMusic.Restore();
+        }
+
+        /// <summary>
+        /// Save updates into the file.
+        /// </summary>
+        private void PreviousFile()
+        {
+            int currentIndex = Musics.IndexOf(SelectedMusic) - 1;
+
+            if (currentIndex < 0)
+                currentIndex = Musics.Count - 1;
+
+            SelectedMusic = Musics[currentIndex];
+        }
+
+        /// <summary>
+        /// Save updates into the file.
+        /// </summary>
+        private void NextFile()
+        {
+            int currentIndex = Musics.IndexOf(SelectedMusic) + 1;
+
+            if (currentIndex >= Musics.Count)
+                currentIndex = 0;
+
+            SelectedMusic = Musics[currentIndex];
+        }
+
+        /// <summary>
         /// Launch the analyze function for one file and display results.
         /// </summary>
         private void Analyse()
         {
             if (!string.IsNullOrEmpty(SelectedMusic.Path))
             {
-                new Task(() =>
-                {
-                    //TODO : delete Secretkey from here
-                    string apiHost = "identify-eu-west-1.acrcloud.com";
-                    string apiKey = "ca88123807e49300eaea0fb9441c1bde";
-                    string secretKey = "ri9MAp8fXzEXu300Apch3Qj74Hadz2XiJbr9izox";
-                    IEnumerable<MusicDao> results = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(SelectedMusic.Path);
+                //TODO : delete Secretkey from here
+                string apiHost = "identify-eu-west-1.acrcloud.com";
+                string apiKey = "ca88123807e49300eaea0fb9441c1bde";
+                string secretKey = "ri9MAp8fXzEXu300Apch3Qj74Hadz2XiJbr9izox";
+                IEnumerable<MusicDao> results = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(SelectedMusic.Path);
 
-                    if (results != null)
+                if (results != null)
+                {
+                    foreach (MusicDao result in results)
                     {
-                        foreach (MusicDao result in results)
-                            SelectedMusic.Results.Add(result);
+                        // TODO : Use delegate to async update.
+                        SelectedMusic.Results.Add(result);
                     }
-                }).Start();
+                }
+                else
+                    MessageBox.Show("Aucun résultat n'a été trouvé.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -170,7 +226,9 @@ namespace Sortzam.Ihm.ViewModels
         /// </summary>
         private void AnalyseAll()
         {
-            int nbMusics = Musics.Count;
+            int nbMusics = 0;
+            foreach (MusicItem music in Musics)
+                if (music.IsChecked) nbMusics++;
 
             if (nbMusics > 0)
             {
@@ -180,28 +238,39 @@ namespace Sortzam.Ihm.ViewModels
 
                     foreach (MusicItem music in Musics)
                     {
-                        //TODO : delete Secretkey from here
-                        string apiHost = "identify-eu-west-1.acrcloud.com";
-                        string apiKey = "ca88123807e49300eaea0fb9441c1bde";
-                        string secretKey = "ri9MAp8fXzEXu300Apch3Qj74Hadz2XiJbr9izox";
-
-                        IEnumerable<MusicDao> results = null;
-                        try
+                        if (music.IsChecked)
                         {
-                            results = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(music.Path);
-                        }
-                        catch { }
 
-                        nbAnalysed++;
-                        PercentProgress = nbAnalysed / nbMusics * 100;
+                            //TODO : delete Secretkey from here
+                            string apiHost = "identify-eu-west-1.acrcloud.com";
+                            string apiKey = "ca88123807e49300eaea0fb9441c1bde";
+                            string secretKey = "ri9MAp8fXzEXu300Apch3Qj74Hadz2XiJbr9izox";
 
-                        if (results != null)
-                        {
-                            foreach (MusicDao result in results)
-                                music.Results.Add(result);
+                            IEnumerable<MusicDao> results = null;
+                            try
+                            {
+                                results = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(music.Path);
+                            }
+                            catch { }
+
+                            nbAnalysed++;
+                            PercentProgress = nbAnalysed / nbMusics * 100;
+
+                            if (results != null)
+                            {
+                                foreach (MusicDao result in results)
+                                {
+                                    // TODO : Use delegate to async update.
+                                    music.Results.Add(result);
+                                }
+                            }
                         }
                     }
                 }).Start();
+            }
+            else
+            {
+                MessageBox.Show("Veuillez cocher au moins une musique.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         #endregion
