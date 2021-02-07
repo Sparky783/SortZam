@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sortzam.Ihm.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -20,6 +21,31 @@ namespace Sortzam.Ihm.Views
         public LoginWindow()
         {
             InitializeComponent();
+        }
+
+        public string ApiHost
+        {
+            get { return apiHostTB.Text; }
+        }
+
+        public string ApiKey
+        {
+            get { return apiKeyTB.Text; }
+        }
+
+        public string SecretKey
+        {
+            get { return secretKeyTB.Password; }
+        }
+
+        private void QuitButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.Current.Shutdown();
+        }
+
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
         }
     }
 }

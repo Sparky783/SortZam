@@ -24,7 +24,6 @@ namespace Sortzam
         {
             InitializeComponent();
             ButtonCloseMenu.Visibility = Visibility.Collapsed;
-            
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -44,9 +43,14 @@ namespace Sortzam
             ButtonCloseMenu.Visibility = Visibility.Collapsed;
         }
 
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        /// <summary>
+        /// Event trigged after the main window finish to load.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
+            App.LoadSettings();
         }
     }
 }

@@ -202,11 +202,7 @@ namespace Sortzam.Ihm.ViewModels
         {
             if (!string.IsNullOrEmpty(SelectedMusic.Path))
             {
-                //TODO : delete Secretkey from here
-                string apiHost = "identify-eu-west-1.acrcloud.com";
-                string apiKey = "ca88123807e49300eaea0fb9441c1bde";
-                string secretKey = "ri9MAp8fXzEXu300Apch3Qj74Hadz2XiJbr9izox";
-                IEnumerable<MusicDao> results = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(SelectedMusic.Path);
+                IEnumerable<MusicDao> results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(SelectedMusic.Path);
 
                 if (results != null)
                 {
@@ -240,16 +236,10 @@ namespace Sortzam.Ihm.ViewModels
                     {
                         if (music.IsChecked)
                         {
-
-                            //TODO : delete Secretkey from here
-                            string apiHost = "identify-eu-west-1.acrcloud.com";
-                            string apiKey = "ca88123807e49300eaea0fb9441c1bde";
-                            string secretKey = "ri9MAp8fXzEXu300Apch3Qj74Hadz2XiJbr9izox";
-
                             IEnumerable<MusicDao> results = null;
                             try
                             {
-                                results = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(music.Path);
+                                results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(music.Path);
                             }
                             catch { }
 

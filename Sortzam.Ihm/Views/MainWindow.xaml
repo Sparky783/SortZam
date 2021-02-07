@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Sortzam"
         xmlns:mdt="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="1080" WindowStartupLocation="CenterScreen" WindowStyle="None">
+        Title="MainWindow" Height="600" Width="1080" WindowStartupLocation="CenterScreen" WindowStyle="None" Loaded="Window_Loaded">
 
     <Window.Resources>
         <Storyboard x:Key="MenuOpen">
@@ -58,7 +58,7 @@
                         <mdt:PackIcon Kind="ArrowLeft" Foreground="#FF142C61" Width="25" Height="25" />
                     </Button>
                 </Grid>
-                <ListView Foreground="White" Background="{x:Null}" BorderBrush="{x:Null}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ListView_SelectionChanged">
+                <ListView Foreground="White" Background="{x:Null}" BorderBrush="{x:Null}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListViewItem Height="60">
                         <StackPanel Orientation="Horizontal">
                             <mdt:PackIcon Kind="ViewDashboard" Width="25" Height="25" Margin="10" />
