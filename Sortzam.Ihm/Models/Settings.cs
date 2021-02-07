@@ -23,11 +23,6 @@ namespace Sortzam.Ihm.Models
             ApiHost = "";
             ApiKey = "";
             SecretKey = "";
-
-            // TODO: Remove before commit on Prod
-            ApiHost = "identify-eu-west-1.acrcloud.com";
-            ApiKey = "ca88123807e49300eaea0fb9441c1bde";
-            SecretKey = "ri9MAp8fXzEXu300Apch3Qj74Hadz2XiJbr9izox";
         }
     }
 }

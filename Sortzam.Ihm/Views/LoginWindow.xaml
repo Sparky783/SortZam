@@ -115,7 +115,7 @@
         <Border Background="White" Margin="50" CornerRadius="10" Padding=" 15">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="100" />
+                    <RowDefinition Height="90" />
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
@@ -126,7 +126,7 @@
                     <TextBlock Text="API Host" FontSize="15" VerticalAlignment="Center" Margin="0,0,0,5" />
                     <TextBox x:Name="apiHostTB" Style="{DynamicResource TextBoxStyle}" VerticalAlignment="Center" />
                     
-                    <TextBlock Text="API Key" FontSize="15" VerticalAlignment="Center" Margin="0,0,0,5" />
+                    <TextBlock Text="API Key" FontSize="15" VerticalAlignment="Center" Margin="0,15,0,5" />
                     <TextBox x:Name="apiKeyTB" Style="{DynamicResource TextBoxStyle}" VerticalAlignment="Center" />
 
                     <TextBlock Text="Secret Key" FontSize="15" VerticalAlignment="Center" Margin="0,15,0,5" />
