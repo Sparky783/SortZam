@@ -40,7 +40,7 @@ namespace Sortzam.Ihm.Views
         private void resultsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count > 0)
-                ViewModel.SelectResult((MusicDao)e.AddedItems[0]);
+                ViewModel.SelectResult((AnalyzeResult)e.AddedItems[0]);
         }
     }
 }

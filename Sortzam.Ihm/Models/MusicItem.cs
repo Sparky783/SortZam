@@ -11,19 +11,14 @@ namespace Sortzam.Ihm.Models
     /// </summary>
     public class MusicItem : Notifier
     {
-        private string initialTitle;
-        private string initialAlbum;
-        private string initialArtist;
-        private string initialKind;
-        private string initialComment;
-        private int? initialYear;
-
         public MusicItem()
         {
-            Results = new ObservableCollection<MusicDao>();
+            Results = new ObservableCollection<AnalyzeResult>();
         }
 
         #region Properties
+
+        #region Initial Properties
         /// <summary>
         /// File name displayed.
         /// </summary>
@@ -46,12 +41,12 @@ namespace Sortzam.Ihm.Models
                 file = value;
                 file.Load();
 
-                initialTitle = file.Title;
-                initialAlbum = file.Album;
-                initialArtist = file.Artist;
-                initialKind = file.Kind;
-                initialComment = file.Comment;
-                initialYear = file.Year;
+                InitialTitle = file.Title;
+                InitialAlbum = file.Album;
+                InitialArtist = file.Artist;
+                InitialKind = file.Kind;
+                InitialComment = file.Comment;
+                InitialYear = file.Year;
 
                 OnPropertyChanged("Title");
                 OnPropertyChanged("Artist");
@@ -59,9 +54,79 @@ namespace Sortzam.Ihm.Models
                 OnPropertyChanged("Album");
                 OnPropertyChanged("Comment");
                 OnPropertyChanged("Year");
+
+                Status = MusicItemStatus.Loaded;
             }
         }
 
+        private string initialTitle;
+        public string InitialTitle
+        {
+            get { return initialTitle;}
+            set
+            {
+                initialTitle = value;
+                OnPropertyChanged("InitialTitle");
+            }
+        }
+
+        private string initialAlbum;
+        public string InitialAlbum
+        {
+            get { return initialAlbum; }
+            set
+            {
+                initialAlbum = value;
+                OnPropertyChanged("InitialAlbum");
+            }
+        }
+
+        private string initialArtist;
+        public string InitialArtist
+        {
+            get { return initialArtist; }
+            set
+            {
+                initialArtist = value;
+                OnPropertyChanged("InitialArtist");
+            }
+        }
+
+        private string initialKind;
+        public string InitialKind
+        {
+            get { return initialKind; }
+            set
+            {
+                initialKind = value;
+                OnPropertyChanged("InitialKind");
+            }
+        }
+
+        private string initialComment;
+        public string InitialComment
+        {
+            get { return initialComment; }
+            set
+            {
+                initialComment = value;
+                OnPropertyChanged("InitialComment");
+            }
+        }
+
+        private int? initialYear;
+        public int? InitialYear
+        {
+            get { return initialYear; }
+            set
+            {
+                initialYear = value;
+                OnPropertyChanged("InitialYear");
+            }
+        }
+        #endregion
+
+        #region Metadata Properties
         /// <summary>
         /// Music title.
         /// </summary>
@@ -78,7 +143,11 @@ namespace Sortzam.Ihm.Models
             set
             {
                 if (file != null)
+                {
                     file.Title = value;
+                    Status = MusicItemStatus.Modified;
+                }
+                    
                 OnPropertyChanged("Title");
             }
         }
@@ -99,7 +168,11 @@ namespace Sortzam.Ihm.Models
             set
             {
                 if (file != null)
+                {
                     file.Artist = value;
+                    Status = MusicItemStatus.Modified;
+                }
+                    
                 OnPropertyChanged("Artist");
             }
         }
@@ -120,7 +193,11 @@ namespace Sortzam.Ihm.Models
             set
             {
                 if (file != null)
+                {
                     file.Kind = value;
+                    Status = MusicItemStatus.Modified;
+                }
+
                 OnPropertyChanged("Kind");
             }
         }
@@ -141,7 +218,11 @@ namespace Sortzam.Ihm.Models
             set
             {
                 if (file != null)
+                {
                     file.Album = value;
+                    Status = MusicItemStatus.Modified;
+                }
+
                 OnPropertyChanged("Album");
             }
         }
@@ -162,7 +243,11 @@ namespace Sortzam.Ihm.Models
             set
             {
                 if (file != null)
+                {
                     file.Comment = value;
+                    Status = MusicItemStatus.Modified;
+                }
+                    
                 OnPropertyChanged("Comment");
             }
         }
@@ -183,11 +268,17 @@ namespace Sortzam.Ihm.Models
             set
             {
                 if (file != null)
+                {
                     file.Year = value;
+                    Status = MusicItemStatus.Modified;
+                }
+                    
                 OnPropertyChanged("Year");
             }
         }
+        #endregion
 
+        #region Others Properties
         private bool isChecked;
         /// <summary>
         /// Say if the music is checked or not by the user.
@@ -202,8 +293,36 @@ namespace Sortzam.Ihm.Models
             }
         }
 
-        private ObservableCollection<MusicDao> results;
-        public ObservableCollection<MusicDao> Results
+        private bool isModified;
+        /// <summary>
+        /// Say if the metadata file are modified.
+        /// </summary>
+        public bool IsModified
+        {
+            get { return isModified; }
+            set
+            {
+                isModified = value;
+                OnPropertyChanged("IsModified");
+            }
+        }
+
+        private MusicItemStatus status;
+        /// <summary>
+        /// Say if the metadata file are modified.
+        /// </summary>
+        public MusicItemStatus Status
+        {
+            get { return status; }
+            set
+            {
+                status = value;
+                OnPropertyChanged("Status");
+            }
+        }
+
+        private ObservableCollection<AnalyzeResult> results;
+        public ObservableCollection<AnalyzeResult> Results
         {
             get { return results; }
             set
@@ -212,6 +331,8 @@ namespace Sortzam.Ihm.Models
                 OnPropertyChanged("Results");
             }
         }
+        #endregion
+
         #endregion
 
         #region Methods
@@ -235,16 +356,46 @@ namespace Sortzam.Ihm.Models
         }
 
         /// <summary>
-        /// Restore file metadata.
+        /// Restore initial values
         /// </summary>
         public void Restore()
         {
-            Title = initialTitle;
-            Album = initialAlbum;
-            Artist = initialArtist;
-            Kind = initialKind;
-            Comment = initialComment;
-            Year = initialYear;
+            Title = InitialTitle;
+            Artist = InitialArtist;
+            Album = InitialAlbum;
+            Kind = InitialKind;
+            Year = InitialYear;
+            Comment = InitialComment;
+        }
+
+        public void SetBestResult()
+        {
+            if (Results.Count > 0)
+            {
+                int b = int.MaxValue;
+                AnalyzeResult bestResult = null;
+
+                foreach (AnalyzeResult result in Results)
+                {
+                    if (result.MatchLevel < b)
+                    {
+                        b = result.MatchLevel;
+                        bestResult = result;
+                    }
+                }
+
+                if (bestResult != null)
+                {
+                    Title = bestResult.Music.Title;
+                    Artist = bestResult.Music.Artist;
+                    Album = bestResult.Music.Album;
+                    Kind = bestResult.Music.Kind;
+                    Year = bestResult.Music.Year;
+                    Comment = bestResult.Music.Comment;
+
+                    Status = MusicItemStatus.Modified;
+                }
+            }
         }
         #endregion
     }

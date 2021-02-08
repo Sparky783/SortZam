@@ -7,7 +7,7 @@
       xmlns:vm="clr-namespace:Sortzam.Ihm.ViewModels"
       xmlns:mdt="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="600" d:DesignWidth="800"
       Title="MusicListPage">
 
     <Page.Resources>
@@ -21,7 +21,7 @@
         </Style>
     </Page.Resources>
 
-    <Grid DataContext="{StaticResource ViewModel}">
+    <Grid DataContext="{StaticResource ViewModel}" Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="1*"/>
@@ -71,7 +71,8 @@
 
                     <DataGrid.Columns>
                         <DataGridCheckBoxColumn Header="" Width="auto" CanUserResize="False" Binding="{Binding IsChecked, Mode=TwoWay}" />
-                        <DataGridTextColumn Header="Titre" Binding="{Binding FileName}" Width="1*" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Titre" Width="1*" IsReadOnly="True" Binding="{Binding FileName}" />
+                        <DataGridTextColumn Header="Status" Width="auto" MinWidth="60" IsReadOnly="True" Binding="{Binding Status}" />
                     </DataGrid.Columns>
                 </DataGrid>
 
@@ -121,6 +122,8 @@
                             <Button Padding="5" Margin="0,0,5,0" Background="#FF142C61" BorderBrush="{x:Null}" Command="{Binding RestoreCommand}">
                                 <mdt:PackIcon Kind="Restore" Foreground="White" />
                             </Button>
+
+                            <CheckBox Content="Auto set" VerticalAlignment="Center" IsChecked="{Binding AutoSet, Mode=TwoWay}" />
                         </StackPanel>
                         
                         <Grid>
@@ -129,8 +132,14 @@
                                 <ColumnDefinition Width="1*" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Text="Titre" Margin="5" />
-                            <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Title, Mode=TwoWay}" />
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,0" Text="Titre" />
+                            <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialTitle}" />
+                            <TextBox Grid.Column="1" Grid.Row="1" Margin="5,3,5,5" Text="{Binding SelectedMusic.Title, Mode=TwoWay}" />
                         </Grid>
 
                         <Grid>
@@ -139,8 +148,14 @@
                                 <ColumnDefinition Width="1*" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Text="Artist" Margin="5" />
-                            <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Artist, Mode=TwoWay}" />
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,0" Text="Artist" />
+                            <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialArtist}" />
+                            <TextBox Grid.Column="1" Grid.Row="1" Margin="5,3,5,5" Text="{Binding SelectedMusic.Artist, Mode=TwoWay}" />
                         </Grid>
 
                         <Grid>
@@ -149,8 +164,14 @@
                                 <ColumnDefinition Width="1*" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Text="Année" Margin="5" />
-                            <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Year, Mode=TwoWay}" />
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,0" Text="Année" />
+                            <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialYear}" />
+                            <TextBox Grid.Column="1" Grid.Row="1" Margin="5,3,5,5" Text="{Binding SelectedMusic.Year, Mode=TwoWay}" />
                         </Grid>
 
                         <Grid>
@@ -159,8 +180,14 @@
                                 <ColumnDefinition Width="1*" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Text="Genre" Margin="5" />
-                            <TextBox Grid.Column="1" Margin="5" Text="{Binding SelectedMusic.Kind, Mode=TwoWay}" />
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,0" Text="Genre" />
+                            <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialKind}" />
+                            <TextBox Grid.Column="1" Grid.Row="1" Margin="5,3,5,5" Text="{Binding SelectedMusic.Kind, Mode=TwoWay}" />
                         </Grid>
                     </StackPanel>
                 </GroupBox>
@@ -179,6 +206,7 @@
 
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Résultats" Binding="{Binding Title}" Width="1*" IsReadOnly="True" />
+                                <DataGridTextColumn Binding="{Binding MatchLevel}" Width="auto" IsReadOnly="True" />
                             </DataGrid.Columns>
                         </DataGrid>
 

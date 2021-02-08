@@ -14,6 +14,7 @@ using System.Linq;
 using Tools.Utils;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using Tools.Comparer;
 
 namespace Sortzam.Ihm.ViewModels
 {
@@ -64,6 +65,23 @@ namespace Sortzam.Ihm.ViewModels
             }
         }
 
+        /// <summary>
+        /// Get the value of Auto set.
+        /// </summary>
+        private bool autoSet;
+        public bool AutoSet
+        {
+            get { return autoSet; }
+            set
+            {
+                autoSet = value;
+                OnPropertyChanged("AutoSet");
+            }
+        }
+
+        /// <summary>
+        /// Percentage of progress during analyze.
+        /// </summary>
         private double percentProgress;
         public double PercentProgress
         {
@@ -202,18 +220,42 @@ namespace Sortzam.Ihm.ViewModels
         {
             if (!string.IsNullOrEmpty(SelectedMusic.Path))
             {
-                IEnumerable<MusicDao> results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(SelectedMusic.Path);
+                IEnumerable<MusicDao> results = null;
+                bool error = false;
 
-                if (results != null)
+                try
                 {
-                    foreach (MusicDao result in results)
+                    results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(SelectedMusic.Path);
+                }
+                catch
+                {
+                    SelectedMusic.Status = MusicItemStatus.Error;
+                    error = true;
+                }
+
+                if(!error)
+                {
+                    if (results != null)
                     {
-                        // TODO : Use delegate to async update.
-                        SelectedMusic.Results.Add(result);
+                        foreach (MusicDao result in results)
+                        {
+                            AnalyzeResult aResult = new AnalyzeResult(result);
+                            aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, SelectedMusic.Title);
+
+                            // TODO : Use delegate to async update.
+                            SelectedMusic.Results.Add(aResult);
+                        }
+
+                        SelectedMusic.Status = MusicItemStatus.Analysed;
+
+                        if (AutoSet)
+                            SelectedMusic.SetBestResult();
                     }
+                    else
+                        MessageBox.Show("Aucun résultat n'a été trouvé.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
-                    MessageBox.Show("Aucun résultat n'a été trouvé.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Une erreur est survenue lors de l'analyse du fichier.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -241,7 +283,10 @@ namespace Sortzam.Ihm.ViewModels
                             {
                                 results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(music.Path);
                             }
-                            catch { }
+                            catch
+                            {
+                                music.Status = MusicItemStatus.Error;
+                            }
 
                             nbAnalysed++;
                             PercentProgress = nbAnalysed / nbMusics * 100;
@@ -250,9 +295,16 @@ namespace Sortzam.Ihm.ViewModels
                             {
                                 foreach (MusicDao result in results)
                                 {
+                                    AnalyzeResult aResult = new AnalyzeResult(result);
+                                    aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, SelectedMusic.Title);
                                     // TODO : Use delegate to async update.
-                                    music.Results.Add(result);
+                                    music.Results.Add(aResult);
                                 }
+
+                                music.Status = MusicItemStatus.Analysed;
+
+                                if (AutoSet)
+                                    music.SetBestResult();
                             }
                         }
                     }
@@ -279,14 +331,14 @@ namespace Sortzam.Ihm.ViewModels
         /// Display the file selected by the user.
         /// </summary>
         /// <param name="music"></param>
-        public void SelectResult(MusicDao music)
+        public void SelectResult(AnalyzeResult result)
         {
-            SelectedMusic.Title = music.Title;
-            SelectedMusic.Artist = music.Artist;
-            SelectedMusic.Album = music.Album;
-            SelectedMusic.Kind = music.Kind;
-            SelectedMusic.Year = music.Year;
-            SelectedMusic.Comment = music.Comment;
+            SelectedMusic.Title = result.Music.Title;
+            SelectedMusic.Artist = result.Music.Artist;
+            SelectedMusic.Album = result.Music.Album;
+            SelectedMusic.Kind = result.Music.Kind;
+            SelectedMusic.Year = result.Music.Year;
+            SelectedMusic.Comment = result.Music.Comment;
         }
     }
 }
