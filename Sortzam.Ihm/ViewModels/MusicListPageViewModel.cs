@@ -237,6 +237,8 @@ namespace Sortzam.Ihm.ViewModels
                 {
                     if (results != null)
                     {
+                        SelectedMusic.Results.Clear();
+
                         foreach (MusicDao result in results)
                         {
                             AnalyzeResult aResult = new AnalyzeResult(result);
@@ -293,6 +295,8 @@ namespace Sortzam.Ihm.ViewModels
 
                             if (results != null)
                             {
+                                music.Results.Clear();
+
                                 foreach (MusicDao result in results)
                                 {
                                     AnalyzeResult aResult = new AnalyzeResult(result);

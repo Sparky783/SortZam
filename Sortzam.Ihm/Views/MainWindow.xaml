@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Sortzam"
         xmlns:mdt="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="1080" WindowStartupLocation="CenterScreen" WindowStyle="None" Loaded="Window_Loaded">
+        Title="MainWindow" MinHeight="600" MinWidth="1000" WindowStartupLocation="CenterScreen" WindowStyle="None" Loaded="Window_Loaded">
 
     <Window.Resources>
         <Storyboard x:Key="MenuOpen">
@@ -38,7 +38,13 @@
         <Grid Height="60" VerticalAlignment="Top" Background="#FF3D69C9">
             <TextBlock Text="Sortzam" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" />
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button Width="60" Background="#FFDC3434" Click="CloseButton_Click">
+                <Button Width="60" Background="{x:Null}" BorderBrush="{x:Null}" Click="MinimizeButton_Click">
+                    <mdt:PackIcon Kind="WindowMinimize" Width="25" Height="25" Foreground="White" />
+                </Button>
+                <Button Width="60" Background="{x:Null}" BorderBrush="{x:Null}" Click="MaximizeButton_Click">
+                    <mdt:PackIcon Kind="WindowMaximize" Width="25" Height="25" Foreground="White" />
+                </Button>
+                <Button Width="60" Background="#FFDC3434" BorderBrush="{x:Null}" Click="CloseButton_Click">
                     <mdt:PackIcon Kind="Close" Width="25" Height="25" Foreground="White" />
                 </Button>
             </StackPanel>

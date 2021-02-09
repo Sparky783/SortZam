@@ -352,7 +352,23 @@ namespace Sortzam.Ihm.Models
         public void Save()
         {
             if (file != null)
+            {
                 file.Save();
+
+                InitialTitle = Title;
+                InitialAlbum = Album;
+                InitialArtist = Artist;
+                InitialKind = Kind;
+                InitialYear = Year;
+                InitialComment = Comment;
+
+                Title = "";
+                Album = "";
+                Artist = "";
+                Kind = "";
+                Year = null;
+                Comment = "";
+            }
         }
 
         /// <summary>
