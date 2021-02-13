@@ -35,7 +35,7 @@
     <Grid>
         <Frame x:Name="FramePage" Margin="60,60,0,0" Source="MusicListPage.xaml" NavigationUIVisibility="Hidden" />
         
-        <Grid Height="60" VerticalAlignment="Top" Background="#FF3D69C9">
+        <Grid Height="60" VerticalAlignment="Top" Background="#FF3D69C9" MouseDown="TopGrid_MouseDown">
             <TextBlock Text="Sortzam" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" />
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <Button Width="60" Background="{x:Null}" BorderBrush="{x:Null}" Click="MinimizeButton_Click">

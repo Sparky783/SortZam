@@ -65,5 +65,11 @@ namespace Sortzam
         {
             App.LoadSettings();
         }
+
+        private void TopGrid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
     }
 }

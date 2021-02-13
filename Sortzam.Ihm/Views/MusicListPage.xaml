@@ -70,7 +70,7 @@
                             SelectionChanged="projectorList_SelectionChanged">
 
                     <DataGrid.Columns>
-                        <DataGridCheckBoxColumn Header="" Width="auto" CanUserResize="False" Binding="{Binding IsChecked, Mode=TwoWay}" />
+                        <DataGridCheckBoxColumn Header="" Width="auto" CanUserResize="False" Binding="{Binding IsChecked, Mode=TwoWay}"  />
                         <DataGridTextColumn Header="Titre" Width="1*" IsReadOnly="True" Binding="{Binding FileName}" />
                         <DataGridTextColumn Header="Status" Width="auto" MinWidth="60" IsReadOnly="True" Binding="{Binding Status}" />
                     </DataGrid.Columns>
