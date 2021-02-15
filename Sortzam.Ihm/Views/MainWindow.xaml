@@ -5,10 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sortzam"
         xmlns:mdt="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:vm="clr-namespace:Sortzam.Ihm.ViewModels"
         mc:Ignorable="d"
         Title="MainWindow" MinHeight="600" MinWidth="1000" WindowStartupLocation="CenterScreen" WindowStyle="None" Loaded="Window_Loaded">
 
     <Window.Resources>
+        <vm:MainWindowViewModel x:Key="ViewModel" />
+
         <Storyboard x:Key="MenuOpen">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Width)" Storyboard.TargetName="MainMenu">
                 <EasingDoubleKeyFrame KeyTime="0" Value="60" />
@@ -32,7 +35,7 @@
         </EventTrigger>
     </Window.Triggers>
 
-    <Grid>
+    <Grid DataContext="{StaticResource ViewModel}">
         <Frame x:Name="FramePage" Margin="60,60,0,0" Source="MusicListPage.xaml" NavigationUIVisibility="Hidden" />
         
         <Grid Height="60" VerticalAlignment="Top" Background="#FF3D69C9" MouseDown="TopGrid_MouseDown">
@@ -51,11 +54,16 @@
         </Grid>
         
         <Grid x:Name="MainMenu" Width="60" HorizontalAlignment="Left" Background="#FF142C61">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            
             <Grid.Effect>
                 <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="#FF646464"/>
             </Grid.Effect>
             
-            <StackPanel>
+            <StackPanel Grid.Row="0">
                 <Grid Background="White" Height="150">
                     <Button x:Name="ButtonOpenMenu" VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="60" Background="{x:Null}" BorderBrush="{x:Null}" Click="ButtonOpenMenu_Click">
                         <mdt:PackIcon Kind="Menu" Foreground="#FF142C61" Width="25" Height="25" />
@@ -64,15 +72,27 @@
                         <mdt:PackIcon Kind="ArrowLeft" Foreground="#FF142C61" Width="25" Height="25" />
                     </Button>
                 </Grid>
-                <ListView Foreground="White" Background="{x:Null}" BorderBrush="{x:Null}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <!--<ListView Foreground="White" Background="{x:Null}" BorderBrush="{x:Null}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListViewItem Height="60">
                         <StackPanel Orientation="Horizontal">
                             <mdt:PackIcon Kind="ViewDashboard" Width="25" Height="25" Margin="10" />
                             <TextBlock Text="Accueil" VerticalAlignment="Center" Margin="20 10" />
                         </StackPanel>
                     </ListViewItem>
-                </ListView>
+                </ListView>-->
             </StackPanel>
+
+            <Button Grid.Row="1" Foreground="White" Background="{x:Null}" BorderBrush="{x:Null}" Command="{Binding SettingsCommand}">
+                <Grid Height="60" Width="200">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <mdt:PackIcon Grid.Column="0" Kind="Settings" Width="25" Height="25" Margin="16" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="Paramètres" VerticalAlignment="Center" Margin="20 10" />
+                </Grid>
+            </Button>
         </Grid>
     </Grid>
 </Window>

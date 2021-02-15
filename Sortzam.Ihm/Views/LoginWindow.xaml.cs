@@ -26,16 +26,19 @@ namespace Sortzam.Ihm.Views
         public string ApiHost
         {
             get { return apiHostTB.Text; }
+            set { apiHostTB.Text = value; }
         }
 
         public string ApiKey
         {
             get { return apiKeyTB.Text; }
+            set { apiKeyTB.Text = value; }
         }
 
         public string SecretKey
         {
             get { return secretKeyTB.Password; }
+            set { secretKeyTB.Password = value; }
         }
 
         private void QuitButton_Click(object sender, RoutedEventArgs e)

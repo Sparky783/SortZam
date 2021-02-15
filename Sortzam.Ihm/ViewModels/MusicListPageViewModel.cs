@@ -220,44 +220,51 @@ namespace Sortzam.Ihm.ViewModels
         {
             if (!string.IsNullOrEmpty(SelectedMusic.Path))
             {
-                IEnumerable<MusicDao> results = null;
-                bool error = false;
+                Task.Factory.StartNew(() =>
+                {
+                    IEnumerable<MusicDao> results = null;
+                    bool error = false;
 
-                try
-                {
-                    results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(SelectedMusic.Path);
-                }
-                catch
-                {
-                    SelectedMusic.Status = MusicItemStatus.Error;
-                    error = true;
-                }
-
-                if(!error)
-                {
-                    if (results != null)
+                    try
                     {
-                        SelectedMusic.Results.Clear();
+                        results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(SelectedMusic.Path);
+                    }
+                    catch
+                    {
+                        SelectedMusic.Status = MusicItemStatus.Error;
+                        error = true;
+                    }
 
-                        foreach (MusicDao result in results)
+                    if (!error)
+                    {
+                        if (results != null)
                         {
-                            AnalyzeResult aResult = new AnalyzeResult(result);
-                            aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, SelectedMusic.Title);
+                            App.Current.Dispatcher.BeginInvoke(() =>
+                            {
+                                SelectedMusic.Results.Clear();
 
-                            // TODO : Use delegate to async update.
-                            SelectedMusic.Results.Add(aResult);
+                                foreach (MusicDao result in results)
+                                {
+                                    AnalyzeResult aResult = new AnalyzeResult(result);
+                                    aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, SelectedMusic.Title);
+
+                                    // TODO : Use delegate to async update.
+                                    SelectedMusic.Results.Add(aResult);
+                                }
+
+                                SelectedMusic.Status = MusicItemStatus.Analysed;
+
+                                if (AutoSet)
+                                    SelectedMusic.SetBestResult();
+                            });
                         }
-
-                        SelectedMusic.Status = MusicItemStatus.Analysed;
-
-                        if (AutoSet)
-                            SelectedMusic.SetBestResult();
+                        else
+                            MessageBox.Show("Aucun résultat n'a été trouvé.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
-                        MessageBox.Show("Aucun résultat n'a été trouvé.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                    MessageBox.Show("Une erreur est survenue lors de l'analyse du fichier.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Une erreur est survenue lors de l'analyse du fichier.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                });
             }
         }
 
@@ -272,7 +279,7 @@ namespace Sortzam.Ihm.ViewModels
 
             if (nbMusics > 0)
             {
-                new Task(() =>
+                Task.Factory.StartNew(() =>
                 {
                     double nbAnalysed = 0;
 
@@ -295,24 +302,27 @@ namespace Sortzam.Ihm.ViewModels
 
                             if (results != null)
                             {
-                                music.Results.Clear();
-
-                                foreach (MusicDao result in results)
+                                App.Current.Dispatcher.BeginInvoke(() =>
                                 {
-                                    AnalyzeResult aResult = new AnalyzeResult(result);
-                                    aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, SelectedMusic.Title);
-                                    // TODO : Use delegate to async update.
-                                    music.Results.Add(aResult);
-                                }
+                                    music.Results.Clear();
 
-                                music.Status = MusicItemStatus.Analysed;
+                                    foreach (MusicDao result in results)
+                                    {
+                                        AnalyzeResult aResult = new AnalyzeResult(result);
+                                        aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, SelectedMusic.Title);
+                                        // TODO : Use delegate to async update.
+                                        music.Results.Add(aResult);
+                                    }
 
-                                if (AutoSet)
-                                    music.SetBestResult();
+                                    music.Status = MusicItemStatus.Analysed;
+
+                                    if (AutoSet)
+                                        music.SetBestResult();
+                                });
                             }
                         }
                     }
-                }).Start();
+                });
             }
             else
             {
