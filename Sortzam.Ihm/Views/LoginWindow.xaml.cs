@@ -20,6 +20,7 @@ namespace Sortzam.Ihm.Views
     {
         public LoginWindow()
         {
+            IsShutdownAction = false;
             InitializeComponent();
         }
 
@@ -41,9 +42,17 @@ namespace Sortzam.Ihm.Views
             set { secretKeyTB.Password = value; }
         }
 
+        public bool IsShutdownAction
+        {
+            get; set;
+        }
+
         private void QuitButton_Click(object sender, RoutedEventArgs e)
         {
-            App.Current.Shutdown();
+            if (IsShutdownAction)
+                App.Current.Shutdown();
+            else
+                Close();
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)

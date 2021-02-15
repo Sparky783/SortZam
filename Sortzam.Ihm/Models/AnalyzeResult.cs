@@ -1,6 +1,7 @@
 ﻿using Sortzam.Lib.DataAccessObjects;
 using System;
 using System.Collections.Generic;
+using System.Windows.Media;
 using System.Text;
 
 namespace Sortzam.Ihm.Models
@@ -10,6 +11,7 @@ namespace Sortzam.Ihm.Models
         public AnalyzeResult(MusicDao music)
         {
             Music = music;
+            ColorLevel = new SolidColorBrush(Colors.Orange);
         }
 
         #region Properties
@@ -36,6 +38,16 @@ namespace Sortzam.Ihm.Models
             set
             {
                 matchLevel = value;
+            }
+        }
+
+        private Brush colorLevel;
+        public Brush ColorLevel
+        {
+            get { return colorLevel; }
+            set
+            {
+                colorLevel = value;
             }
         }
         #endregion

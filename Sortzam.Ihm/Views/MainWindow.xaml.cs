@@ -23,7 +23,6 @@ namespace Sortzam
         public MainWindow()
         {
             InitializeComponent();
-            ButtonCloseMenu.Visibility = Visibility.Collapsed;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -42,18 +41,6 @@ namespace Sortzam
                 WindowState = WindowState.Normal;
             else
                 WindowState = WindowState.Maximized;
-        }
-
-        private void ButtonOpenMenu_Click(object sender, RoutedEventArgs e)
-        {
-            ButtonOpenMenu.Visibility = Visibility.Collapsed;
-            ButtonCloseMenu.Visibility = Visibility.Visible;
-        }
-
-        private void ButtonCloseMenu_Click(object sender, RoutedEventArgs e)
-        {
-            ButtonOpenMenu.Visibility = Visibility.Visible;
-            ButtonCloseMenu.Visibility = Visibility.Collapsed;
         }
 
         /// <summary>

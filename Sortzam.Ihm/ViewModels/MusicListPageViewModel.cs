@@ -220,6 +220,8 @@ namespace Sortzam.Ihm.ViewModels
         {
             if (!string.IsNullOrEmpty(SelectedMusic.Path))
             {
+                MusicItem music = SelectedMusic; // Keep reference of current music item.
+
                 Task.Factory.StartNew(() =>
                 {
                     IEnumerable<MusicDao> results = null;
@@ -227,11 +229,11 @@ namespace Sortzam.Ihm.ViewModels
 
                     try
                     {
-                        results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(SelectedMusic.Path);
+                        results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(music.Path);
                     }
                     catch
                     {
-                        SelectedMusic.Status = MusicItemStatus.Error;
+                        music.Status = MusicItemStatus.Error;
                         error = true;
                     }
 
@@ -241,21 +243,20 @@ namespace Sortzam.Ihm.ViewModels
                         {
                             App.Current.Dispatcher.BeginInvoke(() =>
                             {
-                                SelectedMusic.Results.Clear();
+                                music.Results.Clear();
 
                                 foreach (MusicDao result in results)
                                 {
                                     AnalyzeResult aResult = new AnalyzeResult(result);
-                                    aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, SelectedMusic.Title);
+                                    aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, music.Title);
 
-                                    // TODO : Use delegate to async update.
-                                    SelectedMusic.Results.Add(aResult);
+                                    music.AddResult(aResult);
                                 }
 
-                                SelectedMusic.Status = MusicItemStatus.Analysed;
+                                music.Status = MusicItemStatus.Analysed;
 
                                 if (AutoSet)
-                                    SelectedMusic.SetBestResult();
+                                    music.SetBestResult();
                             });
                         }
                         else
@@ -310,8 +311,8 @@ namespace Sortzam.Ihm.ViewModels
                                     {
                                         AnalyzeResult aResult = new AnalyzeResult(result);
                                         aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, SelectedMusic.Title);
-                                        // TODO : Use delegate to async update.
-                                        music.Results.Add(aResult);
+
+                                        music.AddResult(aResult);
                                     }
 
                                     music.Status = MusicItemStatus.Analysed;

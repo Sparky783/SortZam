@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows.Media;
 
 namespace Sortzam.Ihm.Models
 {
@@ -384,6 +385,49 @@ namespace Sortzam.Ihm.Models
             Comment = InitialComment;
         }
 
+        public void AddResult(AnalyzeResult newResult)
+        {
+            Results.Add(newResult);
+
+            if(Results.Count > 1)
+            {
+                // Looking for the best and the worst result.
+                AnalyzeResult bestResult = null;
+                AnalyzeResult worstResult = null;
+                int bestValue = int.MaxValue;
+                int worstValue = int.MinValue;
+
+                foreach (AnalyzeResult result in Results)
+                {
+                    result.ColorLevel = new SolidColorBrush(Colors.Orange);
+
+                    if (result.MatchLevel < bestValue)
+                    {
+                        bestValue = result.MatchLevel;
+                        bestResult = result;
+                    }
+
+                    if (result.MatchLevel > worstValue)
+                    {
+                        worstValue = result.MatchLevel;
+                        worstResult = result;
+                    }
+                }
+
+                if(bestResult != worstResult)
+                {
+                    if (bestResult != null)
+                        bestResult.ColorLevel = new SolidColorBrush(Colors.Green);
+
+                    if (worstResult != null)
+                        worstResult.ColorLevel = new SolidColorBrush(Colors.Red);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Set the best result to metadata among all results;
+        /// </summary>
         public void SetBestResult()
         {
             if (Results.Count > 0)

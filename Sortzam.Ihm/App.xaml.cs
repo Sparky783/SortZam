@@ -31,6 +31,7 @@ namespace Sortzam
             if (string.IsNullOrEmpty(Settings.ApiHost) || string.IsNullOrEmpty(Settings.ApiKey) || string.IsNullOrEmpty(Settings.SecretKey))
             {
                 LoginWindow login = new LoginWindow();
+                login.IsShutdownAction = true;
 
                 if (login.ShowDialog() == true)
                 {
