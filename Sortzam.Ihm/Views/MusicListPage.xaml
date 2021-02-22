@@ -176,7 +176,7 @@
 
                             <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,0" Text="Année" />
                             <TextBox Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialYear}" BorderBrush="{x:Null}" IsReadOnly="True" />
-                            <TextBox Grid.Column="1" Grid.Row="1" Margin="5,3,5,5" Text="{Binding SelectedMusic.Year, Mode=TwoWay}" />
+                            <TextBox Grid.Column="1" Grid.Row="1" Margin="5,3,5,5" Text="{Binding SelectedMusic.Year, Mode=TwoWay, TargetNullValue=''}" />
                         </Grid>
 
                         <Grid>
@@ -241,6 +241,8 @@
                     </Button>
                 </Grid>
             </Grid>
+
+            <GridSplitter Grid.Column="1" x:Name="gridSplitter" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="5"/>
         </Grid>
     </Grid>
 </Page>
