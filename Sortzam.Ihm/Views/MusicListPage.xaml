@@ -44,7 +44,13 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <TextBlock Margin="0,0,15,0" VerticalAlignment="Center" Text="Dossier: ..." />
+                    <TextBlock Margin="0,0,15,0" VerticalAlignment="Center">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat=" Dossier: {0}">
+                                <Binding Path="FolderPath"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
                     <Button Padding="5" Margin="0,0,15,0" Background="#FF142C61" BorderBrush="{x:Null}" Command="{Binding BrowseCommand}">
                         <mdt:PackIcon Kind="Folder" Foreground="White" />
                     </Button>
@@ -67,7 +73,7 @@
                 <DataGrid Grid.Row="0" x:Name="projectorList" AutoGenerateColumns="False"
                             CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False"
                             ItemsSource="{Binding Musics}" HeadersVisibility="Column"
-                            SelectionChanged="projectorList_SelectionChanged">
+                            SelectionChanged="projectorList_SelectionChanged" SelectedItem="{Binding SelectedMusic}">
 
                     <DataGrid.Columns>
                         <DataGridCheckBoxColumn Header="" Width="auto" CanUserResize="False" Binding="{Binding IsChecked, Mode=TwoWay}"  />
@@ -80,17 +86,18 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Padding="5" Margin="0,0,5,0" Background="#FF142C61" BorderBrush="{x:Null}" Foreground="White" Command="{Binding AnalyzeAllCommand}">
-                            Analyser tout
-                        </Button>
+                        <Button Grid.Column="0" Padding="5" Margin="0,0,5,0" Background="#FF142C61" BorderBrush="{x:Null}" Foreground="White" Command="{Binding AnalyzeCommand}" Content="{Binding AnalyseButtonText}" />
 
-                        <ProgressBar Grid.Column="1" Value="{Binding PercentProgress}" />
+                        <CheckBox Grid.Column="1" Content="Auto remplissage" Margin="0,0,15,0" VerticalAlignment="Center" IsChecked="{Binding AutoSet, Mode=TwoWay}" />
 
-                        <TextBlock Grid.Column="2" VerticalAlignment="Center">
+                        <ProgressBar Grid.Column="2" Value="{Binding PercentProgress}" />
+
+                        <TextBlock Grid.Column="3" VerticalAlignment="Center">
                             <TextBlock.Text>
                                 <MultiBinding StringFormat=" {0}%">
                                     <Binding Path="PercentProgress"/>
@@ -122,8 +129,6 @@
                             <Button Padding="5" Margin="0,0,5,0" Background="#FF142C61" BorderBrush="{x:Null}" Command="{Binding RestoreCommand}">
                                 <mdt:PackIcon Kind="Restore" Foreground="White" />
                             </Button>
-
-                            <CheckBox Content="Auto remplissage" VerticalAlignment="Center" IsChecked="{Binding AutoSet, Mode=TwoWay}" />
                         </StackPanel>
                         
                         <Grid>
@@ -138,7 +143,7 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,0" Text="Titre" />
-                            <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialTitle}" />
+                            <TextBox Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialTitle}" BorderBrush="{x:Null}" IsReadOnly="True" />
                             <TextBox Grid.Column="1" Grid.Row="1" Margin="5,3,5,5" Text="{Binding SelectedMusic.Title, Mode=TwoWay}" />
                         </Grid>
 
@@ -154,7 +159,7 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,0" Text="Artist" />
-                            <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialArtist}" />
+                            <TextBox Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialArtist}" BorderBrush="{x:Null}" IsReadOnly="True" />
                             <TextBox Grid.Column="1" Grid.Row="1" Margin="5,3,5,5" Text="{Binding SelectedMusic.Artist, Mode=TwoWay}" />
                         </Grid>
 
@@ -170,7 +175,7 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,0" Text="Année" />
-                            <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialYear}" />
+                            <TextBox Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialYear}" BorderBrush="{x:Null}" IsReadOnly="True" />
                             <TextBox Grid.Column="1" Grid.Row="1" Margin="5,3,5,5" Text="{Binding SelectedMusic.Year, Mode=TwoWay}" />
                         </Grid>
 
@@ -186,7 +191,7 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,0" Text="Genre" />
-                            <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialKind}" />
+                            <TextBox Grid.Column="1" Grid.Row="0" Margin="5,5,5,0" Text="{Binding SelectedMusic.InitialKind}" BorderBrush="{x:Null}" IsReadOnly="True" />
                             <TextBox Grid.Column="1" Grid.Row="1" Margin="5,3,5,5" Text="{Binding SelectedMusic.Kind, Mode=TwoWay}" />
                         </Grid>
                     </StackPanel>
@@ -196,7 +201,6 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="1*" />
-                            <RowDefinition Height="auto" />
                         </Grid.RowDefinitions>
 
                         <DataGrid x:Name="resultsList" Grid.Row="0" AutoGenerateColumns="False"
@@ -206,7 +210,7 @@
 
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Résultats" Binding="{Binding Title}" Width="1*" IsReadOnly="True" />
-                                
+
                                 <DataGridTextColumn Width="auto" IsReadOnly="True">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="{x:Type TextBlock}">
@@ -216,10 +220,6 @@
                                 </DataGridTextColumn>
                             </DataGrid.Columns>
                         </DataGrid>
-
-                        <Button Grid.Row="1" Padding="5" Margin="0,5,0,0" Background="#FF142C61" BorderBrush="{x:Null}" Foreground="White" Command="{Binding AnalyzeCommand}">
-                            Analyser
-                        </Button>
                     </Grid>
                 </GroupBox>
 

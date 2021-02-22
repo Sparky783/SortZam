@@ -15,6 +15,8 @@ using Tools.Utils;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using Tools.Comparer;
+using System.Collections.Concurrent;
+using System.Threading;
 
 namespace Sortzam.Ihm.ViewModels
 {
@@ -23,6 +25,8 @@ namespace Sortzam.Ihm.ViewModels
     /// </summary>
     public class MusicListPageViewModel : Notifier
     {
+        private bool isAnalyzeRunning;
+
         /// <summary>
         /// Constructor - Init display properties.
         /// </summary>
@@ -30,6 +34,8 @@ namespace Sortzam.Ihm.ViewModels
         {
             Musics = new ObservableCollection<MusicItem>();
             SelectedMusic = new MusicItem();
+            isAnalyzeRunning = false;
+            AnalyseButtonText = "Analyser";
 
             InitCommands();
         }
@@ -46,9 +52,15 @@ namespace Sortzam.Ihm.ViewModels
         /// <summary>
         /// Folder chosen by the user.
         /// </summary>
+        private string folderPath;
         public string FolderPath
         {
-            get; set;
+            get { return folderPath; }
+            set
+            {
+                folderPath = value;
+                OnPropertyChanged("FolderPath");
+            }
         }
 
         private MusicItem selectedMusic;
@@ -82,6 +94,34 @@ namespace Sortzam.Ihm.ViewModels
         /// <summary>
         /// Percentage of progress during analyze.
         /// </summary>
+        private bool enableAnalyzeButton;
+        public bool EnableAnalyzeButton
+        {
+            get { return enableAnalyzeButton; }
+            set
+            {
+                enableAnalyzeButton = value;
+                OnPropertyChanged("EnableAnalyzeButton");
+            }
+        }
+
+        /// <summary>
+        /// Percentage of progress during analyze.
+        /// </summary>
+        private string analyseButtonText;
+        public string AnalyseButtonText
+        {
+            get { return analyseButtonText; }
+            set
+            { 
+                analyseButtonText = value;
+                OnPropertyChanged("AnalyseButtonText");
+            }
+        }
+
+        /// <summary>
+        /// Percentage of progress during analyze.
+        /// </summary>
         private double percentProgress;
         public double PercentProgress
         {
@@ -104,7 +144,6 @@ namespace Sortzam.Ihm.ViewModels
         public ICommand PreviousFileCommand { get; private set; }
         public ICommand NextFileCommand { get; private set; }
         public ICommand AnalyzeCommand { get; private set; }
-        public ICommand AnalyzeAllCommand { get; private set; }
 
         /// <summary>
         /// Prepare commands for all buttons
@@ -120,7 +159,6 @@ namespace Sortzam.Ihm.ViewModels
             PreviousFileCommand = new RelayCommand(x => { PreviousFile(); });
             NextFileCommand = new RelayCommand(x => { NextFile(); });
             AnalyzeCommand = new RelayCommand(x => { Analyse(); });
-            AnalyzeAllCommand = new RelayCommand(x => { AnalyseAll(); });
         }
         #endregion
 
@@ -214,120 +252,83 @@ namespace Sortzam.Ihm.ViewModels
         }
 
         /// <summary>
-        /// Launch the analyze function for one file and display results.
+        /// Launch the analyze function for selected files.
         /// </summary>
         private void Analyse()
         {
-            if (!string.IsNullOrEmpty(SelectedMusic.Path))
+            // If the analyze process is not running, launch it.
+            if (!isAnalyzeRunning)
             {
-                MusicItem music = SelectedMusic; // Keep reference of current music item.
+                int nbMusics = 0;
+                foreach (MusicItem music in Musics)
+                    if (music.IsChecked) nbMusics++;
 
-                Task.Factory.StartNew(() =>
+                if (nbMusics > 0)
                 {
-                    IEnumerable<MusicDao> results = null;
-                    bool error = false;
+                    isAnalyzeRunning = true;
+                    AnalyseButtonText = "Arrêter";
 
-                    try
+                    Task.Factory.StartNew(() =>
                     {
-                        results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(music.Path);
-                    }
-                    catch
-                    {
-                        music.Status = MusicItemStatus.Error;
-                        error = true;
-                    }
+                        double nbAnalysed = 0;
 
-                    if (!error)
-                    {
-                        if (results != null)
+                        foreach (MusicItem music in Musics)
                         {
-                            App.Current.Dispatcher.BeginInvoke(() =>
+                            if (!isAnalyzeRunning)
                             {
-                                music.Results.Clear();
+                                Console.WriteLine("Stop process");
+                                break;
+                            }
 
-                                foreach (MusicDao result in results)
+                            if (music.IsChecked)
+                            {
+                                IEnumerable<MusicDao> results = null;
+                                try
                                 {
-                                    AnalyzeResult aResult = new AnalyzeResult(result);
-                                    aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, music.Title);
-
-                                    music.AddResult(aResult);
+                                    results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(music.Path);
+                                }
+                                catch
+                                {
+                                    music.Status = MusicItemStatus.Error;
                                 }
 
-                                music.Status = MusicItemStatus.Analysed;
+                                nbAnalysed++;
+                                PercentProgress = nbAnalysed / nbMusics * 100;
 
-                                if (AutoSet)
-                                    music.SetBestResult();
-                            });
-                        }
-                        else
-                            MessageBox.Show("Aucun résultat n'a été trouvé.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                        MessageBox.Show("Une erreur est survenue lors de l'analyse du fichier.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                });
-            }
-        }
-
-        /// <summary>
-        /// Launch the analyze function for all files.
-        /// </summary>
-        private void AnalyseAll()
-        {
-            int nbMusics = 0;
-            foreach (MusicItem music in Musics)
-                if (music.IsChecked) nbMusics++;
-
-            if (nbMusics > 0)
-            {
-                Task.Factory.StartNew(() =>
-                {
-                    double nbAnalysed = 0;
-
-                    foreach (MusicItem music in Musics)
-                    {
-                        if (music.IsChecked)
-                        {
-                            IEnumerable<MusicDao> results = null;
-                            try
-                            {
-                                results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(music.Path);
-                            }
-                            catch
-                            {
-                                music.Status = MusicItemStatus.Error;
-                            }
-
-                            nbAnalysed++;
-                            PercentProgress = nbAnalysed / nbMusics * 100;
-
-                            if (results != null)
-                            {
-                                App.Current.Dispatcher.BeginInvoke(() =>
+                                if (results != null)
                                 {
-                                    music.Results.Clear();
-
-                                    foreach (MusicDao result in results)
+                                    App.Current.Dispatcher.BeginInvoke(() =>
                                     {
-                                        AnalyzeResult aResult = new AnalyzeResult(result);
-                                        aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, SelectedMusic.Title);
+                                        music.Results.Clear();
 
-                                        music.AddResult(aResult);
-                                    }
+                                        foreach (MusicDao result in results)
+                                        {
+                                            AnalyzeResult aResult = new AnalyzeResult(result);
+                                            aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, SelectedMusic.Title);
 
-                                    music.Status = MusicItemStatus.Analysed;
+                                            music.AddResult(aResult);
+                                        }
 
-                                    if (AutoSet)
-                                        music.SetBestResult();
-                                });
+                                        music.Status = MusicItemStatus.Analysed;
+
+                                        if (AutoSet)
+                                            music.SetBestResult();
+                                    });
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
+                else
+                {
+                    MessageBox.Show("Veuillez cocher au moins une musique.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
-            else
+            else // If the analyze process is running, stop it.
             {
-                MessageBox.Show("Veuillez cocher au moins une musique.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                isAnalyzeRunning = false;
+                AnalyseButtonText = "Analyser";
+                PercentProgress = 0;
             }
         }
         #endregion

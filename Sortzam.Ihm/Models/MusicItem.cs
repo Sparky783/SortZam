@@ -352,7 +352,7 @@ namespace Sortzam.Ihm.Models
         /// </summary>
         public void Save()
         {
-            if (file != null)
+            if (file != null && Status == MusicItemStatus.Modified)
             {
                 file.Save();
 
