@@ -18,6 +18,7 @@ namespace Sortzam
     public partial class App : Application
     {
         static public Settings Settings = new Settings();
+        static public event EventHandler SettingsEvent;
 
         /// <summary>
         /// Load user settings
@@ -35,16 +36,23 @@ namespace Sortzam
 
                 if (login.ShowDialog() == true)
                 {
-                    if (!string.IsNullOrEmpty(login.ApiHost) && !string.IsNullOrEmpty(login.ApiKey) && !string.IsNullOrEmpty(login.SecretKey))
+                    if(login.UseAccount)
                     {
-                        Settings.ApiHost = login.ApiHost;
-                        Settings.ApiKey = login.ApiKey;
-                        Settings.SecretKey = login.SecretKey;
-
-                        SaveSettings();
+                        if (!string.IsNullOrEmpty(login.ApiHost) && !string.IsNullOrEmpty(login.ApiKey) && !string.IsNullOrEmpty(login.SecretKey))
+                        {
+                            Settings.ApiHost = login.ApiHost;
+                            Settings.ApiKey = login.ApiKey;
+                            Settings.SecretKey = login.SecretKey;
+                        }
                     }
+
+                    Settings.UseAccount = login.UseAccount;
+
+                    SaveSettings();
                 }
             }
+
+            OnSettingsChanged();
         }
 
         /// <summary>
@@ -53,6 +61,14 @@ namespace Sortzam
         static public void SaveSettings()
         {
             SerializerUtils<Settings>.XmlSerialize(Settings, "usersettings.szs"); // szs = SortZam Settings
+        }
+
+        /// <summary>
+        /// Update HMI when settings changed.
+        /// </summary>
+        static public void OnSettingsChanged()
+        {
+            SettingsEvent?.Invoke(null, null);
         }
     }
 }

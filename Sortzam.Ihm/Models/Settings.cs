@@ -9,6 +9,9 @@ namespace Sortzam.Ihm.Models
     public class Settings
     {
         [DataMember]
+        public bool UseAccount { get; set; }
+
+        [DataMember]
         public string ApiHost { get; set; }
 
         [DataMember]

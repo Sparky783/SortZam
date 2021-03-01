@@ -41,14 +41,20 @@ namespace Sortzam.Ihm.ViewModels
 
             if (login.ShowDialog() == true)
             {
-                if (!string.IsNullOrEmpty(login.ApiHost) && !string.IsNullOrEmpty(login.ApiKey) && !string.IsNullOrEmpty(login.SecretKey))
+                if (login.UseAccount)
                 {
-                    App.Settings.ApiHost = login.ApiHost;
-                    App.Settings.ApiKey = login.ApiKey;
-                    App.Settings.SecretKey = login.SecretKey;
-
-                    App.SaveSettings();
+                    if (!string.IsNullOrEmpty(login.ApiHost) && !string.IsNullOrEmpty(login.ApiKey) && !string.IsNullOrEmpty(login.SecretKey))
+                    {
+                        App.Settings.ApiHost = login.ApiHost;
+                        App.Settings.ApiKey = login.ApiKey;
+                        App.Settings.SecretKey = login.SecretKey;
+                    }
                 }
+
+                App.Settings.UseAccount = login.UseAccount;
+
+                App.SaveSettings();
+                App.OnSettingsChanged();
             }
         }
         #endregion

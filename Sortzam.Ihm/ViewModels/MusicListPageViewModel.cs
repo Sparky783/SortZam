@@ -37,6 +37,8 @@ namespace Sortzam.Ihm.ViewModels
             isAnalyzeRunning = false;
             AnalyseButtonText = "Analyser";
 
+            App.SettingsEvent += OnUpdateSettings;
+
             InitCommands();
         }
 
@@ -332,6 +334,16 @@ namespace Sortzam.Ihm.ViewModels
             }
         }
         #endregion
+
+        /// <summary>
+        /// Update HMI from settings changes.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnUpdateSettings(object sender, EventArgs e)
+        {
+            EnableAnalyzeButton = App.Settings.UseAccount;
+        }
 
         /// <summary>
         /// Display the file selected by the user.

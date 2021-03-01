@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Sortzam.Ihm.Views"
         xmlns:mdt="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Sortzam" Height="450" Width="350" WindowStyle="None" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Topmost="True">
+        Title="Sortzam" Height="500" Width="350" WindowStyle="None" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Topmost="True">
 
     <Window.Resources>
         <SolidColorBrush x:Key="TextBox.Static.Border" Color="#FFABAdB3"/>
@@ -131,16 +131,20 @@
 
                     <TextBlock Text="Secret Key" FontSize="15" VerticalAlignment="Center" Margin="0,15,0,5" />
                     <PasswordBox x:Name="secretKeyTB" Style="{DynamicResource PasswordBoxStyle}" VerticalAlignment="Center" />
+
+                    <Button HorizontalAlignment="right" VerticalAlignment="Top" Margin="0,15,0,5" Click="LoginButton_Click">
+                        <Button.Template>
+                            <ControlTemplate>
+                                <Border Padding="20,5" Background="#FF3D69C9" CornerRadius="5">
+                                    <TextBlock Text="Sauvegarder" Foreground="White" FontSize="15" />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
                 </StackPanel>
 
-                <Button Grid.Row="2" HorizontalAlignment="right" VerticalAlignment="Top" Click="LoginButton_Click">
-                    <Button.Template>
-                        <ControlTemplate>
-                            <Border Padding="20,5" Background="#FF3D69C9" CornerRadius="5">
-                                <TextBlock Text="Sauvegarder" Foreground="White" FontSize="15" />
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
+                <Button Grid.Row="2" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF3D69C9" FontSize="12" Click="UseWithoutAccount_Click">
+                    Utiliser sans compte
                 </Button>
             </Grid>
         </Border>
