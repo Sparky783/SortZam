@@ -267,6 +267,7 @@ namespace Sortzam.Ihm.ViewModels
 
                 if (nbMusics > 0)
                 {
+                    PercentProgress = 0;
                     isAnalyzeRunning = true;
                     AnalyseButtonText = "Arrêter";
 
@@ -319,6 +320,10 @@ namespace Sortzam.Ihm.ViewModels
                                 }
                             }
                         }
+
+                        PercentProgress = 100;
+                        isAnalyzeRunning = false;
+                        AnalyseButtonText = "Terminé";
                     });
                 }
                 else
