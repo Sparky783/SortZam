@@ -17,6 +17,7 @@ using System.Windows.Threading;
 using Tools.Comparer;
 using System.Collections.Concurrent;
 using System.Threading;
+using Sortzam.Lib.UserSettings;
 
 namespace Sortzam.Ihm.ViewModels
 {
@@ -288,7 +289,8 @@ namespace Sortzam.Ihm.ViewModels
                                 IEnumerable<MusicDao> results = null;
                                 try
                                 {
-                                    results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(music.Path);
+                                    Settings settings = Settings.GetInstance();
+                                    results = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(music.Path);
                                 }
                                 catch
                                 {
@@ -347,7 +349,8 @@ namespace Sortzam.Ihm.ViewModels
         /// <param name="e"></param>
         private void OnUpdateSettings(object sender, EventArgs e)
         {
-            EnableAnalyzeButton = App.Settings.UseAccount;
+            Settings settings = Settings.GetInstance();
+            EnableAnalyzeButton = settings.UseAccount;
         }
 
         /// <summary>

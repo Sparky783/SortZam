@@ -1,6 +1,7 @@
 ﻿using Sortzam.Ihm.Models;
 using Sortzam.Ihm.Models.Command;
 using Sortzam.Ihm.Views;
+using Sortzam.Lib.UserSettings;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -33,10 +34,12 @@ namespace Sortzam.Ihm.ViewModels
         /// </summary>
         private void OpenSettings()
         {
+            Settings settings = Settings.GetInstance();
+
             LoginWindow login = new LoginWindow();
-            login.ApiHost = App.Settings.ApiHost;
-            login.ApiKey = App.Settings.ApiKey;
-            login.SecretKey = App.Settings.SecretKey;
+            login.ApiHost = settings.ApiHost;
+            login.ApiKey = settings.ApiKey;
+            login.SecretKey = settings.SecretKey;
 
 
             if (login.ShowDialog() == true)
@@ -45,15 +48,15 @@ namespace Sortzam.Ihm.ViewModels
                 {
                     if (!string.IsNullOrEmpty(login.ApiHost) && !string.IsNullOrEmpty(login.ApiKey) && !string.IsNullOrEmpty(login.SecretKey))
                     {
-                        App.Settings.ApiHost = login.ApiHost;
-                        App.Settings.ApiKey = login.ApiKey;
-                        App.Settings.SecretKey = login.SecretKey;
+                        settings.ApiHost = login.ApiHost;
+                        settings.ApiKey = login.ApiKey;
+                        settings.SecretKey = login.SecretKey;
                     }
                 }
 
-                App.Settings.UseAccount = login.UseAccount;
+                settings.UseAccount = login.UseAccount;
 
-                App.SaveSettings();
+                settings.Save();
                 App.OnSettingsChanged();
             }
         }

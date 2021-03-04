@@ -1,5 +1,6 @@
 ﻿using Sortzam.Ihm.Models;
 using Sortzam.Ihm.Views;
+using Sortzam.Lib.UserSettings;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -17,7 +18,6 @@ namespace Sortzam
     /// </summary>
     public partial class App : Application
     {
-        static public Settings Settings = new Settings();
         static public event EventHandler SettingsEvent;
 
         /// <summary>
@@ -25,11 +25,10 @@ namespace Sortzam
         /// </summary>
         static public void LoadSettings()
         {
-            if(File.Exists("usersettings.szs"))
-                Settings = SerializerUtils<Settings>.XmlDeserialize("usersettings.szs"); // szs = SortZam Settings
+            Settings settings = Settings.GetInstance();
 
             // Check if the user config the app.
-            if (string.IsNullOrEmpty(Settings.ApiHost) || string.IsNullOrEmpty(Settings.ApiKey) || string.IsNullOrEmpty(Settings.SecretKey))
+            if (string.IsNullOrEmpty(settings.ApiHost) || string.IsNullOrEmpty(settings.ApiKey) || string.IsNullOrEmpty(settings.SecretKey))
             {
                 LoginWindow login = new LoginWindow();
                 login.IsShutdownAction = true;
@@ -40,27 +39,18 @@ namespace Sortzam
                     {
                         if (!string.IsNullOrEmpty(login.ApiHost) && !string.IsNullOrEmpty(login.ApiKey) && !string.IsNullOrEmpty(login.SecretKey))
                         {
-                            Settings.ApiHost = login.ApiHost;
-                            Settings.ApiKey = login.ApiKey;
-                            Settings.SecretKey = login.SecretKey;
+                            settings.ApiHost = login.ApiHost;
+                            settings.ApiKey = login.ApiKey;
+                            settings.SecretKey = login.SecretKey;
                         }
                     }
 
-                    Settings.UseAccount = login.UseAccount;
-
-                    SaveSettings();
+                    settings.UseAccount = login.UseAccount;
+                    settings.Save();
                 }
             }
 
             OnSettingsChanged();
-        }
-
-        /// <summary>
-        /// Save user settings
-        /// </summary>
-        static public void SaveSettings()
-        {
-            SerializerUtils<Settings>.XmlSerialize(Settings, "usersettings.szs"); // szs = SortZam Settings
         }
 
         /// <summary>
