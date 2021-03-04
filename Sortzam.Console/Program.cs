@@ -1,5 +1,6 @@
 ﻿using Sortzam.Lib.DataAccessObjects;
 using Sortzam.Lib.Detectors;
+using Sortzam.Lib.UserSettings;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,9 +13,6 @@ namespace Sortzam.Cmd
 {
     class Program
     {
-        public static string apiHost = "identify-eu-west-1.acrcloud.com";
-        public static string apiKey = "ca88123807e49300eaea0fb9441c1bde";
-        public static string secretKey = "ri9MAp8fXzEXu300Apch3Qj74Hadz2XiJbr9izox";
         static void Main(string[] args)
         {
             Console.WriteLine("Tap a number to select a function :");
@@ -29,8 +27,11 @@ namespace Sortzam.Cmd
             }
             Console.ReadLine();
         }
+
         static void Analyze()
         {
+            Settings settings = Settings.GetInstance();
+
             Console.WriteLine("Please enter the directory path to analyze : ");
             var path = PathUtils.Normalize(Console.ReadLine());
             if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
@@ -42,7 +43,7 @@ namespace Sortzam.Cmd
                 IEnumerable<MusicDao> tag = null;
                 try
                 {
-                    tag = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(i.Path);
+                    tag = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(i.Path);
                 }
                 catch (Exception e)
                 {

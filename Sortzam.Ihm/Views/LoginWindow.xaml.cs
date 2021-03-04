@@ -21,8 +21,11 @@ namespace Sortzam.Ihm.Views
         public LoginWindow()
         {
             IsShutdownAction = false;
+            UseAccount = false;
             InitializeComponent();
         }
+
+        public bool UseAccount { get; set; }
 
         public string ApiHost
         {
@@ -57,6 +60,13 @@ namespace Sortzam.Ihm.Views
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
+            UseAccount = true;
+            DialogResult = true;
+        }
+
+        private void UseWithoutAccount_Click(object sender, RoutedEventArgs e)
+        {
+            UseAccount = false;
             DialogResult = true;
         }
     }

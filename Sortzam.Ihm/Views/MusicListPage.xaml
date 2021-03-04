@@ -91,7 +91,7 @@
                             <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Padding="5" Margin="0,0,5,0" Background="#FF142C61" BorderBrush="{x:Null}" Foreground="White" Command="{Binding AnalyzeCommand}" Content="{Binding AnalyseButtonText}" />
+                        <Button Grid.Column="0" Padding="15,5" Margin="0,0,5,0" Background="#FF142C61" BorderBrush="{x:Null}" Foreground="White" Command="{Binding AnalyzeCommand}" Content="{Binding AnalyseButtonText}" IsEnabled="{Binding EnableAnalyzeButton}" />
 
                         <CheckBox Grid.Column="1" Content="Auto remplissage" Margin="0,0,15,0" VerticalAlignment="Center" IsChecked="{Binding AutoSet, Mode=TwoWay}" />
 

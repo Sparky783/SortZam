@@ -22,7 +22,7 @@
                 <mdt:PackIcon Grid.Column="0" Kind="Settings" Width="25" Height="25" Margin="16" VerticalAlignment="Center" />
             </Button>
 
-            <TextBlock Text="Sortzam" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" />
+            <TextBlock Text="SortZam" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" />
 
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <Button Width="60" Background="{x:Null}" BorderBrush="{x:Null}" Click="MinimizeButton_Click">

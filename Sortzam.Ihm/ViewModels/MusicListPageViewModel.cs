@@ -17,6 +17,7 @@ using System.Windows.Threading;
 using Tools.Comparer;
 using System.Collections.Concurrent;
 using System.Threading;
+using Sortzam.Lib.UserSettings;
 
 namespace Sortzam.Ihm.ViewModels
 {
@@ -36,6 +37,8 @@ namespace Sortzam.Ihm.ViewModels
             SelectedMusic = new MusicItem();
             isAnalyzeRunning = false;
             AnalyseButtonText = "Analyser";
+
+            App.SettingsEvent += OnUpdateSettings;
 
             InitCommands();
         }
@@ -265,6 +268,7 @@ namespace Sortzam.Ihm.ViewModels
 
                 if (nbMusics > 0)
                 {
+                    PercentProgress = 0;
                     isAnalyzeRunning = true;
                     AnalyseButtonText = "Arrêter";
 
@@ -285,7 +289,8 @@ namespace Sortzam.Ihm.ViewModels
                                 IEnumerable<MusicDao> results = null;
                                 try
                                 {
-                                    results = new MusicTagDetector(App.Settings.ApiHost, App.Settings.ApiKey, App.Settings.SecretKey).Recognize(music.Path);
+                                    Settings settings = Settings.GetInstance();
+                                    results = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(music.Path);
                                 }
                                 catch
                                 {
@@ -317,6 +322,10 @@ namespace Sortzam.Ihm.ViewModels
                                 }
                             }
                         }
+
+                        PercentProgress = 100;
+                        isAnalyzeRunning = false;
+                        AnalyseButtonText = "Terminé";
                     });
                 }
                 else
@@ -332,6 +341,17 @@ namespace Sortzam.Ihm.ViewModels
             }
         }
         #endregion
+
+        /// <summary>
+        /// Update HMI from settings changes.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnUpdateSettings(object sender, EventArgs e)
+        {
+            Settings settings = Settings.GetInstance();
+            EnableAnalyzeButton = settings.UseAccount;
+        }
 
         /// <summary>
         /// Display the file selected by the user.
