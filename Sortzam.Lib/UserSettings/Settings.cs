@@ -60,7 +60,19 @@ namespace Sortzam.Lib.UserSettings
         /// </summary>
         public void Save()
         {
+            if (settingsInstance == null)
+                settingsInstance = new Settings() { ApiHost = ApiHost, UseAccount = UseAccount, ApiKey = ApiKey, SecretKey = SecretKey };
+            if (File.Exists(FILE_NAME))
+                File.Delete(FILE_NAME);
             SerializerUtils<Settings>.XmlSerialize(settingsInstance, FILE_NAME); // szs = SortZam Settings
+        }
+
+        /// <summary>
+        /// Clear current Settings to force the next loading
+        /// </summary>
+        public static void Clear()
+        {
+            settingsInstance = null;
         }
         #endregion
     }
