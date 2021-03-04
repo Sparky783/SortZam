@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sortzam.Lib.Detectors;
+using Sortzam.Lib.UserSettings;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,19 +11,16 @@ namespace Sortzam.Tests
     [TestClass]
     public class MusicTagDetector_Test
     {
-        //TODO : delete Secretkey from here
-        public static string apiHost = "identify-eu-west-1.acrcloud.com";
-        public static string apiKey = "ca88123807e49300eaea0fb9441c1bde";
-        public static string secretKey = "ri9MAp8fXzEXu300Apch3Qj74Hadz2XiJbr9izox";
-
         /// <summary>
         /// Testing recognition music from true mp3 file
         /// </summary>
         [TestMethod]
         public void Recognize_TrueFile_mp3()
         {
+            Settings settings = Settings.GetInstance();
+
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "test1.mp3");
-            var result = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(data);
+            var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("I Like It")));
             Assert.IsTrue(result.Any(p => p.Artist.Contains("Enrique Iglesias")));
@@ -37,8 +35,10 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_TrueFile_wav()
         {
+            Settings settings = Settings.GetInstance();
+
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "subdirectory", "Tout le monde Danse.wav");
-            var result = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(data);
+            var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("Tout le monde danse")));
             Assert.IsTrue(result.Any(p => p.Artist.Contains("Fally Ipupa")));
@@ -53,8 +53,10 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_TrueFile_m4a()
         {
+            Settings settings = Settings.GetInstance();
+
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "subdirectory", "05 Meet Her At The Loveparade.m4a");
-            var result = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(data);
+            var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("Meet Her At The Loveparade")));
             Assert.IsTrue(result.Any(p => p.Artist.Contains("Da Hool")));
@@ -69,8 +71,10 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_TrueFile_flac()
         {
+            Settings settings = Settings.GetInstance();
+
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "subdirectory", "subsubdirectory", "Robin Schulz - In Your Eyes (feat. Alida).flac");
-            var result = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(data);
+            var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("In Your Eyes")));
             Assert.IsTrue(result.Any(p => p.Artist.Contains("Alida/Robin Schulz")));
@@ -84,8 +88,10 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_TrueFile_wma()
         {
+            Settings settings = Settings.GetInstance();
+
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "subdirectory", "Taio Cruz - Break Your Heart.wma");
-            var result = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(data);
+            var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("Break Your Heart")));
             Assert.IsTrue(result.Any(p => p.Artist.Contains("Taio Cruz")));
@@ -100,8 +106,10 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_UnrecognizableFile()
         {
+            Settings settings = Settings.GetInstance();
+
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "test2.mp3");
-            var result = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(data);
+            var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             Assert.IsNull(result);
         }
 
@@ -111,10 +119,12 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_CorruptedFile()
         {
+            Settings settings = Settings.GetInstance();
+
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "test3.mp3");
             Assert.ThrowsException<Exception>(() =>
             {
-                new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(data);
+                new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             });
         }
 
@@ -124,10 +134,12 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_UnfoundFile()
         {
+            Settings settings = Settings.GetInstance();
+
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "dfeghrtyhrghdfsghdrgfshrh.mp3");
             Assert.ThrowsException<FileNotFoundException>(() =>
             {
-                new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(data);
+                new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             });
         }
     }
