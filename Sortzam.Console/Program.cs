@@ -39,7 +39,17 @@ namespace Sortzam.Cmd
             var files = new MusicFileDaoDetector().Search(new List<string>() { path });
             foreach (var i in files)
             {
-                var tag = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(i.Path);
+                IEnumerable<MusicDao> tag = null;
+                try
+                {
+                    tag = new MusicTagDetector(apiHost, apiKey, secretKey).Recognize(i.Path);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("File audio error : " + i.Path);
+                    Console.WriteLine(e.Message);
+                    continue;
+                }
                 if (tag == null || tag.Count() <= 0)
                 {
                     Console.WriteLine("File not recognized : " + i.Path);
