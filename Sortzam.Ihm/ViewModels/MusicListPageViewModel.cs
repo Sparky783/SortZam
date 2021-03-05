@@ -289,7 +289,7 @@ namespace Sortzam.Ihm.ViewModels
                                 IEnumerable<MusicDao> results = null;
                                 try
                                 {
-                                    Settings settings = Settings.GetInstance();
+                                    Settings settings = MySettings.GetInstance();
                                     results = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(music.Path);
                                 }
                                 catch
@@ -349,7 +349,7 @@ namespace Sortzam.Ihm.ViewModels
         /// <param name="e"></param>
         private void OnUpdateSettings(object sender, EventArgs e)
         {
-            Settings settings = Settings.GetInstance();
+            Settings settings = MySettings.GetInstance();
             EnableAnalyzeButton = settings.UseAccount;
         }
 

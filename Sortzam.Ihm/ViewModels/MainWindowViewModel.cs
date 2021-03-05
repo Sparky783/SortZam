@@ -34,7 +34,7 @@ namespace Sortzam.Ihm.ViewModels
         /// </summary>
         private void OpenSettings()
         {
-            Settings settings = Settings.GetInstance();
+            Settings settings = MySettings.GetInstance();
 
             LoginWindow login = new LoginWindow();
             login.ApiHost = settings.ApiHost;

@@ -30,7 +30,7 @@ namespace Sortzam.Cmd
 
         static void Analyze()
         {
-            Settings settings = Settings.GetInstance();
+            Settings settings = MySettings.GetInstance();
 
             Console.WriteLine("Please enter the directory path to analyze : ");
             var path = PathUtils.Normalize(Console.ReadLine());

@@ -17,7 +17,7 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_TrueFile_mp3()
         {
-            Settings settings = Settings.GetInstance();
+            Settings settings = MySettings.GetInstance();
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "test1.mp3");
             var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
@@ -35,7 +35,7 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_TrueFile_wav()
         {
-            Settings settings = Settings.GetInstance();
+            Settings settings = MySettings.GetInstance();
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "subdirectory", "Tout le monde Danse.wav");
             var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
@@ -53,7 +53,7 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_TrueFile_m4a()
         {
-            Settings settings = Settings.GetInstance();
+            Settings settings = MySettings.GetInstance();
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "subdirectory", "05 Meet Her At The Loveparade.m4a");
             var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
@@ -71,7 +71,7 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_TrueFile_flac()
         {
-            Settings settings = Settings.GetInstance();
+            Settings settings = MySettings.GetInstance();
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "subdirectory", "subsubdirectory", "Robin Schulz - In Your Eyes (feat. Alida).flac");
             var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
@@ -88,7 +88,7 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_TrueFile_wma()
         {
-            Settings settings = Settings.GetInstance();
+            Settings settings = MySettings.GetInstance();
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "subdirectory", "Taio Cruz - Break Your Heart.wma");
             var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
@@ -106,7 +106,7 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_UnrecognizableFile()
         {
-            Settings settings = Settings.GetInstance();
+            Settings settings = MySettings.GetInstance();
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "test2.mp3");
             var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
@@ -119,7 +119,7 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_CorruptedFile()
         {
-            Settings settings = Settings.GetInstance();
+            Settings settings = MySettings.GetInstance();
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "test3.mp3");
             Assert.ThrowsException<Exception>(() =>
@@ -134,7 +134,7 @@ namespace Sortzam.Tests
         [TestMethod]
         public void Recognize_UnfoundFile()
         {
-            Settings settings = Settings.GetInstance();
+            Settings settings = MySettings.GetInstance();
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "dfeghrtyhrghdfsghdrgfshrh.mp3");
             Assert.ThrowsException<FileNotFoundException>(() =>
