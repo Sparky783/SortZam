@@ -26,13 +26,13 @@ To use this application, you need (one or more) ACRCloud account, with valid API
 ## Pricing
 The Application is free and open-source with no license limit. But she is based on the ACRCloud API where the price are described here :
 
-| Valid Requests (per month)        | Price (per 1000 Valid Requests)      |
-| ------|-----|-----|
-| First 5000  	| Free 	|
-| Next 20000  	| 3$ 	|
-| Next 25000  	| 2.5$ 	|
-| Next 55000  	| 2.2$ 	|
-| Over 100 000  	| 1.7$ 	|
+| Valid Requests (per month) | Price (per 1000 Valid Requests) |
+|----------------------------|---------------------------------|
+| First 5000                 | Free                            |
+| Next 20000                 | 3$                              |
+| Next 25000                 | 2.5$                            |
+| Next 55000                 | 2.2$                            |
+| Over 100 000               | 1.7$                            |
 
 (prices may change, non-contractual data)
 
