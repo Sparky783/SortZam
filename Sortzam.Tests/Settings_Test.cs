@@ -42,6 +42,7 @@ namespace Sortzam.Tests
                 // Load it
                 var settings = new Settings();
                 settings.Load();
+                File.Delete(MySettings.FILE_NAME);
                 Assert.IsNotNull(settings);
                 Assert.IsNotNull(settings.ApiHost);
                 Assert.IsNotNull(settings.ApiKey);
@@ -92,6 +93,9 @@ namespace Sortzam.Tests
                 };
                 settings.Save();
                 Assert.AreEqual(File.ReadAllText(MySettings.FILE_NAME), File.ReadAllText("datas/usersettings-test.szs"));
+
+                // Delete the settings file
+                File.Delete(MySettings.FILE_NAME);
                 return null;
             });
         }
@@ -127,6 +131,9 @@ namespace Sortzam.Tests
                 Assert.AreEqual(settings2.ApiKey, "apikey_test2");
                 Assert.AreEqual(settings2.SecretKey, "secretkey_test2");
                 Assert.AreEqual(settings2.UseAccount, false);
+
+                // Delete the settings file
+                File.Delete(MySettings.FILE_NAME);
                 return null;
             });
         }
@@ -143,6 +150,7 @@ namespace Sortzam.Tests
                 File.Copy("datas/usersettings-test.szs", MySettings.FILE_NAME);
 
                 // Check first access values
+                MySettings.Clear();
                 var settings = MySettings.GetInstance();
                 Assert.IsNotNull(settings);
                 Assert.IsNotNull(settings.ApiHost);

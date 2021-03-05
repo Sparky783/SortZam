@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Runtime.Serialization;
+using Tools.Tools;
 using Tools.Utils;
 
 namespace Sortzam.Lib.UserSettings
@@ -8,7 +9,8 @@ namespace Sortzam.Lib.UserSettings
     {
         static public string FILE_NAME = "usersettings.szs";
 
-        static private Settings settingsInstance;
+        static Settings settingsInstance;
+        private static LockersSafeProvider<string> _lockerProvider = new LockersSafeProvider<string>();
 
         /// <summary>
         /// Get user settings instance and if the file already exist, load it.
@@ -16,12 +18,19 @@ namespace Sortzam.Lib.UserSettings
         /// <returns></returns>
         static public Settings GetInstance()
         {
-            if (settingsInstance == null)
+            if (settingsInstance != null)
+                return settingsInstance;
+
+            lock (_lockerProvider["settingsInstance"])
             {
                 settingsInstance = new Settings();
                 settingsInstance.Load();
             }
             return settingsInstance;
+        }
+        public static void Clear()
+        {
+            settingsInstance = null;
         }
     }
     [DataContract]
