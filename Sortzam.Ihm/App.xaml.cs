@@ -25,7 +25,7 @@ namespace Sortzam
         /// </summary>
         static public void LoadSettings()
         {
-            Settings settings = Settings.GetInstance();
+            Settings settings = Settings.Instance;
 
             // Check if the user config the app.
             if (string.IsNullOrEmpty(settings.ApiHost) || string.IsNullOrEmpty(settings.ApiKey) || string.IsNullOrEmpty(settings.SecretKey))
