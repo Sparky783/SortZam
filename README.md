@@ -39,3 +39,7 @@ The Application is free and open-source with no license limit. But she is based 
 [website]:    https://www.acrcloud.com/
 [Sign UP]:    https://console.acrcloud.com/signup#/register
 [Console administration interface]:    https://console.acrcloud.com/signin/home
+
+## Feedback
+If you are developper and you want to participate to the application improvement, feel free to create your branch and send us a pool request. 
+If not, we will be very happy to have your feedback and improvement ideas : contact us ;)
