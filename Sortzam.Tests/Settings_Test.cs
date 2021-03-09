@@ -15,7 +15,7 @@ namespace Sortzam.Tests
         /// Testing the default values of a settings class
         /// </summary>
         [TestMethod]
-        public void GetInstanceUnexistingFile_DefaultValuesCheck()
+        public void GetInstance_UnexistingFile_DefaultValuesCheck()
         {
             PreserveExistingSettingsFile(() =>
             {
@@ -39,7 +39,7 @@ namespace Sortzam.Tests
         /// Testing the load of a SortZam Settings File load with a true file
         /// </summary>
         [TestMethod]
-        public void GetInstanceExistingFile_DefaultValuesCheck()
+        public void GetInstance_ExistingFile()
         {
             PreserveExistingSettingsFile(() =>
             {
@@ -75,6 +75,7 @@ namespace Sortzam.Tests
                 if (File.Exists(Settings.FILE_NAME))
                     File.Delete(Settings.FILE_NAME);
 
+                Settings.Clear();
                 Settings settings = Settings.Instance;
 
                 settings.ApiHost = "apihost_test";
@@ -102,6 +103,7 @@ namespace Sortzam.Tests
                 File.Copy("datas/usersettings-test.szs", Settings.FILE_NAME);
 
                 // New settings with new values
+                Settings.Clear();
                 Settings settings = Settings.Instance;
                 settings.ApiHost = "apihost_test2";
                 settings.ApiKey = "apikey_test2";
@@ -109,6 +111,7 @@ namespace Sortzam.Tests
                 settings.Save();
 
                 // Check if file is overrided
+                Settings.Clear();
                 Settings settings2 = Settings.Instance;
 
                 Assert.IsNotNull(settings2);
