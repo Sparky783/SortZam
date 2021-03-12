@@ -12,9 +12,10 @@ namespace Sortzam.Lib.UserSettings
     {
         [IgnoreDataMember]
         static public string FILE_NAME = "usersettings.szs";
-
         [IgnoreDataMember]
         static private Settings settingsInstance;
+        [IgnoreDataMember]
+        private static readonly object padlock = new object(); // Use to be thread-safe
 
         #region Saved members
         [DataMember]
@@ -30,7 +31,7 @@ namespace Sortzam.Lib.UserSettings
         public string SecretKey { get; set; }
         #endregion
 
-        public Settings()
+        private Settings()
         {
             ApiHost = "";
             ApiKey = "";
@@ -42,17 +43,32 @@ namespace Sortzam.Lib.UserSettings
         /// Get user settings instance and if the file already exist, load it.
         /// </summary>
         /// <returns></returns>
-        static public Settings GetInstance()
+        static public Settings Instance
         {
-            if (settingsInstance == null)
+            get
             {
-                if (File.Exists(FILE_NAME))
-                    settingsInstance = SerializerUtils<Settings>.XmlDeserialize(FILE_NAME); // szs = SortZam Settings
-                else
-                    settingsInstance = new Settings();
-            }
+                if (settingsInstance == null)
+                {
+                    lock (padlock)
+                    {
+                        if (File.Exists(FILE_NAME))
+                            settingsInstance = SerializerUtils<Settings>.XmlDeserialize(FILE_NAME); // szs = SortZam Settings
+                        else
+                            settingsInstance = new Settings();
+                    }
+                }
 
-            return settingsInstance;
+                return settingsInstance;
+            }
+        }
+
+        /// <summary>
+        /// Get user settings instance and if the file already exist, load it.
+        /// </summary>
+        /// <returns></returns>
+        static public void Clear()
+        {
+            settingsInstance = null;
         }
 
         /// <summary>
