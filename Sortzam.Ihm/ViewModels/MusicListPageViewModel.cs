@@ -325,7 +325,7 @@ namespace Sortzam.Ihm.ViewModels
 
                         PercentProgress = 100;
                         isAnalyzeRunning = false;
-                        AnalyseButtonText = "Terminé";
+                        AnalyseButtonText = "Analyser";
                     });
                 }
                 else
