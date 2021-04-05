@@ -6,7 +6,6 @@
 #define MyAppPublisher "FlyArts Studio"
 #define MyAppURL "https://www.sortzam.flyarts.fr"
 #define MyAppExeName "Sortzam.exe"
-#define MyOutputSetupFileName "Sortzam-Setup-v1.0"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -25,7 +24,7 @@ DisableProgramGroupPage=yes
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=.
-OutputBaseFilename={#MyOutputSetupFileName}
+OutputBaseFilename="{#MyAppName}-Setup-v{#MyAppVersion}"
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -37,7 +36,7 @@ Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "Software\Sortzam.Ihm\bin\x86\Release\netcoreapp3.1\*"; DestDir: "{app}"; Flags: ignoreversion
+Source: "Publish\*.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
