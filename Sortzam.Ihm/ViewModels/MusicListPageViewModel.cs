@@ -17,7 +17,6 @@ using System.Windows.Threading;
 using Tools.Comparer;
 using System.Collections.Concurrent;
 using System.Threading;
-using Sortzam.Lib.UserSettings;
 
 namespace Sortzam.Ihm.ViewModels
 {

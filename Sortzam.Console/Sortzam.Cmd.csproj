@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Sortzam.Ihm\Sortzam.Ihm.csproj" />
     <ProjectReference Include="..\Sortzam.Lib\Sortzam.Lib.csproj" />
     <ProjectReference Include="..\Tools\Tools.csproj" />
   </ItemGroup>

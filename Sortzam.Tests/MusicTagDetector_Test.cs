@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sortzam.Ihm.Models;
 using Sortzam.Lib.Detectors;
-using Sortzam.Lib.UserSettings;
 using System;
 using System.Collections.Generic;
 using System.IO;

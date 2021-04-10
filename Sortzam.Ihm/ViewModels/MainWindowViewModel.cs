@@ -1,7 +1,6 @@
 ﻿using Sortzam.Ihm.Models;
 using Sortzam.Ihm.Models.Command;
 using Sortzam.Ihm.Views;
-using Sortzam.Lib.UserSettings;
 using System;
 using System.Collections.Generic;
 using System.Text;
