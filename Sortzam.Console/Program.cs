@@ -1,6 +1,5 @@
 ﻿using Sortzam.Lib.DataAccessObjects;
 using Sortzam.Lib.Detectors;
-using Sortzam.Lib.UserSettings;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Tools.Comparer;
 using Tools.Utils;
+using Sortzam.Ihm.Models;
 
 namespace Sortzam.Cmd
 {

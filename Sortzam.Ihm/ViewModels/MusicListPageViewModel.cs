@@ -17,7 +17,6 @@ using System.Windows.Threading;
 using Tools.Comparer;
 using System.Collections.Concurrent;
 using System.Threading;
-using Sortzam.Lib.UserSettings;
 
 namespace Sortzam.Ihm.ViewModels
 {
@@ -325,7 +324,7 @@ namespace Sortzam.Ihm.ViewModels
 
                         PercentProgress = 100;
                         isAnalyzeRunning = false;
-                        AnalyseButtonText = "Terminé";
+                        AnalyseButtonText = "Analyser";
                     });
                 }
                 else

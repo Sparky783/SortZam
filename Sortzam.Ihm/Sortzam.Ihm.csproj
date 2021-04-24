@@ -6,6 +6,22 @@
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x86</Platforms>
     <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>Sortzam</AssemblyName>
+    <PackageId>Sortzam</PackageId>
+    <Authors>Gourrat - Lavignotte</Authors>
+    <Company>FlyArts Studio</Company>
+    <Description>Music recognition application</Description>
+    <Copyright></Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://sortzam.flyarts.fr/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Sparky783/SortZam.git</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageReleaseNotes>First version !!!</PackageReleaseNotes>
+    <NeutralLanguage>fr</NeutralLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,5 +45,27 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sortzam.Lib\Sortzam.Lib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 </Project>

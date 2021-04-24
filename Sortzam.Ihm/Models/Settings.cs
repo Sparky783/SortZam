@@ -5,38 +5,66 @@ using System.Runtime.Serialization;
 using System.Text;
 using Tools.Utils;
 
-namespace Sortzam.Lib.UserSettings
+namespace Sortzam.Ihm.Models
 {
-    [DataContract]
     public class Settings
     {
-        [IgnoreDataMember]
-        static public string FILE_NAME = "usersettings.szs";
-        [IgnoreDataMember]
         static private Settings settingsInstance;
-        [IgnoreDataMember]
         private static readonly object padlock = new object(); // Use to be thread-safe
 
         #region Saved members
-        [DataMember]
-        public bool UseAccount { get; set; }
-
-        [DataMember]
-        public string ApiHost { get; set; }
-
-        [DataMember]
-        public string ApiKey { get; set; }
-
-        [DataMember]
-        public string SecretKey { get; set; }
-        #endregion
-
-        private Settings()
+        public bool UseAccount
         {
-            ApiHost = "";
-            ApiKey = "";
-            SecretKey = "";
+            get
+            {
+                return Ihm.Properties.Settings.Default.UseAccount;
+            }
+
+            set
+            {
+                Ihm.Properties.Settings.Default.UseAccount = value;
+            }
         }
+
+        public string ApiHost
+        {
+            get
+            {
+                return Ihm.Properties.Settings.Default.ApiHost;
+            }
+
+            set
+            {
+                Ihm.Properties.Settings.Default.ApiHost = value;
+            }
+        }
+
+        public string ApiKey
+        {
+            get
+            {
+                return Ihm.Properties.Settings.Default.ApiKey;
+            }
+
+            set
+            {
+                Ihm.Properties.Settings.Default.ApiKey = value;
+            }
+        }
+
+        public string SecretKey
+        {
+            get
+            {
+                return Ihm.Properties.Settings.Default.SecretKey;
+            }
+
+            set
+            {
+                Ihm.Properties.Settings.Default.SecretKey = value;
+            }
+        }
+        #endregion
 
         #region Methods
         /// <summary>
@@ -51,10 +79,7 @@ namespace Sortzam.Lib.UserSettings
                 {
                     lock (padlock)
                     {
-                        if (File.Exists(FILE_NAME))
-                            settingsInstance = SerializerUtils<Settings>.XmlDeserialize(FILE_NAME); // szs = SortZam Settings
-                        else
-                            settingsInstance = new Settings();
+                        settingsInstance = new Settings();
                     }
                 }
 
@@ -76,7 +101,7 @@ namespace Sortzam.Lib.UserSettings
         /// </summary>
         public void Save()
         {
-            SerializerUtils<Settings>.XmlSerialize(settingsInstance, FILE_NAME); // szs = SortZam Settings
+            Ihm.Properties.Settings.Default.Save();
         }
         #endregion
     }
