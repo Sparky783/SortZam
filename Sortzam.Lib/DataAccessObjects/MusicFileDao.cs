@@ -5,45 +5,62 @@ using Tools.Utils;
 
 namespace Sortzam.Lib.DataAccessObjects
 {
+    /// <summary>
+    /// Represent a music file
+    /// </summary>
     public class MusicFileDao : MusicDao
     {
+        #region Properties
         public string FileName { get; set; }
         public MusicFileExtension Extension { get; set; }
         public string Path { get; set; }
+        #endregion
+
 
         public MusicFileDao(string pathFile)
         {
             Path = pathFile;
+
             if (string.IsNullOrEmpty(Path) || !FileUtils.Exists(Path))
                 throw new System.IO.FileNotFoundException(string.Format("Can't find file : `{0}`", Path));
 
             FileName = System.IO.Path.GetFileName(pathFile);
 
-            var extension = System.IO.Path.GetExtension(pathFile).Replace(".", "");
+            string extension = System.IO.Path.GetExtension(pathFile).Replace(".", "");
+
             if (Enum.TryParse(extension, true, out MusicFileExtension extensionOut) && Enum.IsDefined(typeof(MusicFileExtension), extensionOut))
                 Extension = extensionOut;
             else
                 throw new Exception(string.Format("Extension `{0}` is not supported", extension));
         }
 
+
         /// <summary>
         /// Charge track details from file meta datas ID3
         /// </summary>
         public void Load()
         {
-            var editor = File.Create(Path)?.Tag;
+            Tag editor = File.Create(Path)?.Tag;
+
             if (editor.Performers != null && editor.Performers.Length > 0)
                 Artist = editor.Performers.ToString("/", false);
-            else Artist = FileName;
+            else
+                Artist = FileName;
+
             if (!string.IsNullOrEmpty(editor.Title))
                 Title = editor.Title;
-            else Title = FileName;
+            else
+                Title = FileName;
+
             if (!string.IsNullOrEmpty(editor.Album))
                 Album = editor.Album;
+
             if (editor.Genres != null && editor.Genres.Length > 0)
                 Kind = editor.Genres.ToString("/", false);
+
             if (!string.IsNullOrEmpty(editor.Comment))
                 Comment = editor.Comment;
+
             if (editor.Year > 0)
                 Year = (int)editor.Year;
         }
@@ -53,7 +70,7 @@ namespace Sortzam.Lib.DataAccessObjects
         /// </summary>
         public void Save()
         {
-            var editor = File.Create(Path);
+            File editor = File.Create(Path);
             editor.Tag.Performers = Artist?.Split("/");
             editor.Tag.Title = Title;
             editor.Tag.Album = Album;
@@ -69,13 +86,15 @@ namespace Sortzam.Lib.DataAccessObjects
         /// <param name="music"></param>
         public void Map(MusicDao music)
         {
-            if (music == null) return;
-            this.Album = music.Album;
-            this.Artist = music.Artist;
-            this.Comment = music.Comment;
-            this.Kind = music.Kind;
-            this.Title = music.Title;
-            this.Year = music.Year;
+            if (music == null)
+                return;
+
+            Album = music.Album;
+            Artist = music.Artist;
+            Comment = music.Comment;
+            Kind = music.Kind;
+            Title = music.Title;
+            Year = music.Year;
         }
     }
 }

@@ -1,22 +1,17 @@
-﻿using Microsoft.Win32;
-using Sortzam.Ihm.Models;
+﻿using Sortzam.Ihm.Models;
 using Sortzam.Ihm.Models.Command;
 using Sortzam.Lib.DataAccessObjects;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Windows.Input;
 using System.Windows.Forms;
-using System.IO;
 using Sortzam.Lib.Detectors;
 using System.Linq;
-using Tools.Utils;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 using Tools.Comparer;
-using System.Collections.Concurrent;
-using System.Threading;
+using Sortzam.Lib;
+using Sortzam.Lib.ACRCloudSDK;
 
 namespace Sortzam.Ihm.ViewModels
 {
@@ -25,16 +20,17 @@ namespace Sortzam.Ihm.ViewModels
     /// </summary>
     public class MusicListPageViewModel : Notifier
     {
-        private bool isAnalyzeRunning;
+        private bool _isAnalyzeRunning;
 
         /// <summary>
         /// Constructor - Init display properties.
         /// </summary>
         public MusicListPageViewModel()
         {
+            _isAnalyzeRunning = false;
+
             Musics = new ObservableCollection<MusicItem>();
             SelectedMusic = new MusicItem();
-            isAnalyzeRunning = false;
             AnalyseButtonText = "Analyser";
 
             App.SettingsEvent += OnUpdateSettings;
@@ -54,27 +50,27 @@ namespace Sortzam.Ihm.ViewModels
         /// <summary>
         /// Folder chosen by the user.
         /// </summary>
-        private string folderPath;
+        private string _folderPath;
         public string FolderPath
         {
-            get { return folderPath; }
+            get { return _folderPath; }
             set
             {
-                folderPath = value;
+                _folderPath = value;
                 OnPropertyChanged("FolderPath");
             }
         }
 
-        private MusicItem selectedMusic;
         /// <summary>
         /// Current selected music display on the side HMI.
         /// </summary>
+        private MusicItem _selectedMusic;
         public MusicItem SelectedMusic
         {
-            get { return selectedMusic; }
+            get { return _selectedMusic; }
             set
             {
-                selectedMusic = value;
+                _selectedMusic = value;
                 OnPropertyChanged("SelectedMusic");
             }
         }
@@ -82,13 +78,13 @@ namespace Sortzam.Ihm.ViewModels
         /// <summary>
         /// Get the value of Auto set.
         /// </summary>
-        private bool autoSet;
+        private bool _autoSet;
         public bool AutoSet
         {
-            get { return autoSet; }
+            get { return _autoSet; }
             set
             {
-                autoSet = value;
+                _autoSet = value;
                 OnPropertyChanged("AutoSet");
             }
         }
@@ -96,13 +92,13 @@ namespace Sortzam.Ihm.ViewModels
         /// <summary>
         /// Percentage of progress during analyze.
         /// </summary>
-        private bool enableAnalyzeButton;
+        private bool _enableAnalyzeButton;
         public bool EnableAnalyzeButton
         {
-            get { return enableAnalyzeButton; }
+            get { return _enableAnalyzeButton; }
             set
             {
-                enableAnalyzeButton = value;
+                _enableAnalyzeButton = value;
                 OnPropertyChanged("EnableAnalyzeButton");
             }
         }
@@ -110,13 +106,13 @@ namespace Sortzam.Ihm.ViewModels
         /// <summary>
         /// Percentage of progress during analyze.
         /// </summary>
-        private string analyseButtonText;
+        private string _analyseButtonText;
         public string AnalyseButtonText
         {
-            get { return analyseButtonText; }
+            get { return _analyseButtonText; }
             set
-            { 
-                analyseButtonText = value;
+            {
+                _analyseButtonText = value;
                 OnPropertyChanged("AnalyseButtonText");
             }
         }
@@ -124,13 +120,13 @@ namespace Sortzam.Ihm.ViewModels
         /// <summary>
         /// Percentage of progress during analyze.
         /// </summary>
-        private double percentProgress;
+        private double _percentProgress;
         public double PercentProgress
         {
-            get { return percentProgress; }
+            get { return _percentProgress; }
             set
             {
-                percentProgress = Math.Round(value, 2);
+                _percentProgress = Math.Round(value, 2);
                 OnPropertyChanged("PercentProgress");
             }
         }
@@ -164,194 +160,7 @@ namespace Sortzam.Ihm.ViewModels
         }
         #endregion
 
-        #region Button Methods
-        /// <summary>
-        /// Ask to the user to chose a folder and display content. Subfolders are also displayed. 
-        /// </summary>
-        private void Browse()
-        {
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
-
-            if (fbd.ShowDialog() == DialogResult.OK)
-            {
-                FolderPath = fbd.SelectedPath;
-                IEnumerable<MusicFileDao> files = new MusicFileDaoDetector().SearchInDirectory(FolderPath); // Load path files and metas for each
-                Musics.Clear();
-
-                IEnumerable<MusicItem> musicFiles = files.Select(p => new MusicItem()
-                {
-                    FileName = p.FileName,
-                    Path = p.Path,
-                    File = p
-                });
-
-                foreach(MusicItem file in musicFiles)
-                    Musics.Add(file);
-            }
-        }
-
-        /// <summary>
-        /// Check or Uncheck all files on the display. 
-        /// </summary>
-        /// <param name="value"></param>
-        private void SelectAll(bool value)
-        {
-            foreach (MusicItem music in Musics)
-                music.IsChecked = value;
-        }
-
-        /// <summary>
-        /// Save updates into the file.
-        /// </summary>
-        private void SaveFile()
-        {
-            SelectedMusic.Save();
-        }
-
-        /// <summary>
-        /// Save metadata for each files
-        /// </summary>
-        private void SaveAllFiles()
-        {
-            foreach(MusicItem music in Musics)
-                music.Save();
-
-            MessageBox.Show("Tous les fichiers ont étés sauvegardés.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        /// <summary>
-        /// Restore previous values for metadata.
-        /// </summary>
-        private void Restore()
-        {
-            SelectedMusic.Restore();
-        }
-
-        /// <summary>
-        /// Save updates into the file.
-        /// </summary>
-        private void PreviousFile()
-        {
-            int currentIndex = Musics.IndexOf(SelectedMusic) - 1;
-
-            if (currentIndex < 0)
-                currentIndex = Musics.Count - 1;
-
-            SelectedMusic = Musics[currentIndex];
-        }
-
-        /// <summary>
-        /// Save updates into the file.
-        /// </summary>
-        private void NextFile()
-        {
-            int currentIndex = Musics.IndexOf(SelectedMusic) + 1;
-
-            if (currentIndex >= Musics.Count)
-                currentIndex = 0;
-
-            SelectedMusic = Musics[currentIndex];
-        }
-
-        /// <summary>
-        /// Launch the analyze function for selected files.
-        /// </summary>
-        private void Analyse()
-        {
-            // If the analyze process is not running, launch it.
-            if (!isAnalyzeRunning)
-            {
-                int nbMusics = 0;
-                foreach (MusicItem music in Musics)
-                    if (music.IsChecked) nbMusics++;
-
-                if (nbMusics > 0)
-                {
-                    PercentProgress = 0;
-                    isAnalyzeRunning = true;
-                    AnalyseButtonText = "Arrêter";
-
-                    Task.Factory.StartNew(() =>
-                    {
-                        double nbAnalysed = 0;
-
-                        foreach (MusicItem music in Musics)
-                        {
-                            if (!isAnalyzeRunning)
-                            {
-                                Console.WriteLine("Stop process");
-                                break;
-                            }
-
-                            if (music.IsChecked)
-                            {
-                                IEnumerable<MusicDao> results = null;
-                                try
-                                {
-                                    Settings settings = Settings.Instance;
-                                    results = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(music.Path);
-                                }
-                                catch
-                                {
-                                    music.Status = MusicItemStatus.Error;
-                                }
-
-                                nbAnalysed++;
-                                PercentProgress = nbAnalysed / nbMusics * 100;
-
-                                if (results != null)
-                                {
-                                    App.Current.Dispatcher.BeginInvoke(() =>
-                                    {
-                                        music.Results.Clear();
-
-                                        foreach (MusicDao result in results)
-                                        {
-                                            AnalyzeResult aResult = new AnalyzeResult(result);
-                                            aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, SelectedMusic.Title);
-
-                                            music.AddResult(aResult);
-                                        }
-
-                                        music.Status = MusicItemStatus.Analysed;
-
-                                        if (AutoSet)
-                                            music.SetBestResult();
-                                    });
-                                }
-                            }
-                        }
-
-                        PercentProgress = 100;
-                        isAnalyzeRunning = false;
-                        AnalyseButtonText = "Analyser";
-                    });
-                }
-                else
-                {
-                    MessageBox.Show("Veuillez cocher au moins une musique.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            else // If the analyze process is running, stop it.
-            {
-                isAnalyzeRunning = false;
-                AnalyseButtonText = "Analyser";
-                PercentProgress = 0;
-            }
-        }
-        #endregion
-
-        /// <summary>
-        /// Update HMI from settings changes.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnUpdateSettings(object sender, EventArgs e)
-        {
-            Settings settings = Settings.Instance;
-            EnableAnalyzeButton = settings.UseAccount;
-        }
-
+        #region Public methods
         /// <summary>
         /// Display the file selected by the user.
         /// </summary>
@@ -375,5 +184,234 @@ namespace Sortzam.Ihm.ViewModels
             SelectedMusic.Year = result.Music.Year;
             SelectedMusic.Comment = result.Music.Comment;
         }
+        #endregion
+
+        #region Private Methods
+        /// <summary>
+        /// Ask to the user to chose a folder and display content. Subfolders are also displayed. 
+        /// </summary>
+        private void Browse()
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+
+            if (fbd.ShowDialog() == DialogResult.OK)
+            {
+                FolderPath = fbd.SelectedPath;
+                IEnumerable<MusicFileDao> files = new MusicFileSearcher().SearchInDirectory(FolderPath); // Load path files and metas for each
+                Musics.Clear();
+
+                if(files != null)
+                {
+                    IEnumerable<MusicItem> musicFiles = files.Select(p => new MusicItem()
+                    {
+                        FileName = p.FileName,
+                        Path = p.Path,
+                        File = p
+                    });
+
+                    foreach (MusicItem file in musicFiles)
+                        Musics.Add(file);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Check or Uncheck all files on the display. 
+        /// </summary>
+        /// <param name="value"></param>
+        private void SelectAll(bool value)
+        {
+            if (!CheckWorkingFolder())
+                return;
+
+            foreach (MusicItem music in Musics)
+                music.IsChecked = value;
+        }
+
+        /// <summary>
+        /// Save updates into the file.
+        /// </summary>
+        private void SaveFile()
+        {
+            if (!CheckWorkingFolder())
+                return;
+
+            SelectedMusic.Save();
+        }
+
+        /// <summary>
+        /// Save metadata for each files
+        /// </summary>
+        private void SaveAllFiles()
+        {
+            if(!CheckWorkingFolder())
+                return;
+
+            foreach (MusicItem music in Musics)
+                music.Save();
+
+            MessageBox.Show("Tous les fichiers ont étés sauvegardés.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Restore previous values for metadata.
+        /// </summary>
+        private void Restore()
+        {
+            if (!CheckWorkingFolder())
+                return;
+
+            SelectedMusic.Restore();
+        }
+
+        /// <summary>
+        /// Save updates into the file.
+        /// </summary>
+        private void NextFile()
+        {
+            if (!CheckWorkingFolder())
+                return;
+
+            if (Musics.Count <= 0)
+                return;
+
+            int currentIndex = Musics.IndexOf(SelectedMusic) + 1;
+
+            if (currentIndex >= Musics.Count)
+                currentIndex = 0;
+
+            SelectedMusic = Musics[currentIndex];
+        }
+
+        /// <summary>
+        /// Save updates into the file.
+        /// </summary>
+        private void PreviousFile()
+        {
+            if (!CheckWorkingFolder())
+                return;
+
+            if (Musics.Count <= 0)
+                return;
+
+            int currentIndex = Musics.IndexOf(SelectedMusic) - 1;
+
+            if (currentIndex < 0)
+                currentIndex = Musics.Count - 1;
+
+            SelectedMusic = Musics[currentIndex];
+        }
+
+        /// <summary>
+        /// Launch the analyze function for selected files.
+        /// </summary>
+        private void Analyse()
+        {
+            // If the analyze process is not running, launch it.
+            if (_isAnalyzeRunning) // If the analyze process is running, stop it.
+            {
+                _isAnalyzeRunning = false;
+                AnalyseButtonText = "Analyser";
+                PercentProgress = 0;
+
+                return;
+            }
+
+            int nbMusics = 0;
+            foreach (MusicItem music in Musics)
+                if (music.IsChecked) nbMusics++;
+
+            if (nbMusics <= 0)
+            {
+                MessageBox.Show("Veuillez cocher au moins une musique.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            
+            PercentProgress = 0;
+            _isAnalyzeRunning = true;
+            AnalyseButtonText = "Arrêter";
+
+            Task.Factory.StartNew(() =>
+            {
+                double nbAnalysed = 0;
+
+                foreach (MusicItem music in Musics)
+                {
+                    if (!_isAnalyzeRunning)
+                    {
+                        Console.WriteLine("Stop process");
+                        break;
+                    }
+
+                    if (music.IsChecked)
+                    {
+                        IEnumerable<MusicDao> results = null;
+
+                        try
+                        {
+                            Settings settings = Settings.Instance;
+                            DetectorConnector detector = new DetectorConnector(new ACRCloudDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey));
+                            results = detector.Recognize(music.Path);
+                        }
+                        catch
+                        {
+                            music.Status = MusicItemStatus.Error;
+                        }
+
+                        nbAnalysed++;
+                        PercentProgress = nbAnalysed / nbMusics * 100;
+
+                        if (results != null)
+                        {
+                            App.Current.Dispatcher.BeginInvoke(() =>
+                            {
+                                music.Results.Clear();
+
+                                foreach (MusicDao result in results)
+                                {
+                                    AnalyzeResult aResult = new AnalyzeResult(result);
+                                    aResult.MatchLevel = LevenshteinDistance.Compute(aResult.Title, SelectedMusic.Title);
+
+                                    music.AddResult(aResult);
+                                }
+
+                                music.Status = MusicItemStatus.Analysed;
+
+                                if (AutoSet)
+                                    music.SetBestResult();
+                            });
+                        }
+                    }
+                }
+
+                PercentProgress = 100;
+                _isAnalyzeRunning = false;
+                AnalyseButtonText = "Analyser";
+            });
+            
+        }
+
+        /// <summary>
+        /// Update HMI from settings changes.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnUpdateSettings(object sender, EventArgs e)
+        {
+            Settings settings = Settings.Instance;
+            EnableAnalyzeButton = settings.UseAccount;
+        }
+
+        private bool CheckWorkingFolder()
+        {
+            if (string.IsNullOrEmpty(FolderPath))
+            {
+                MessageBox.Show("Veuillez sélectionner un dossier de travail.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return false;
+            }
+
+            return true;
+        }
+        #endregion
     }
 }
