@@ -10,6 +10,8 @@ using Sortzam.Lib.Detectors;
 using System.Linq;
 using System.Threading.Tasks;
 using Tools.Comparer;
+using Sortzam.Lib;
+using Sortzam.Lib.ACRCloudSDK;
 
 namespace Sortzam.Ihm.ViewModels
 {
@@ -195,7 +197,7 @@ namespace Sortzam.Ihm.ViewModels
             if (fbd.ShowDialog() == DialogResult.OK)
             {
                 FolderPath = fbd.SelectedPath;
-                IEnumerable<MusicFileDao> files = new MusicFileDaoDetector().SearchInDirectory(FolderPath); // Load path files and metas for each
+                IEnumerable<MusicFileDao> files = new MusicFileSearcher().SearchInDirectory(FolderPath); // Load path files and metas for each
                 Musics.Clear();
 
                 if(files != null)
@@ -344,10 +346,12 @@ namespace Sortzam.Ihm.ViewModels
                     if (music.IsChecked)
                     {
                         IEnumerable<MusicDao> results = null;
+
                         try
                         {
                             Settings settings = Settings.Instance;
-                            results = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(music.Path);
+                            DetectorConnector detector = new DetectorConnector(new ACRCloudDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey));
+                            results = detector.Recognize(music.Path);
                         }
                         catch
                         {

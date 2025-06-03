@@ -122,10 +122,10 @@ namespace Sortzam.Tests
             Settings settings = Settings.Instance;
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "test3.mp3");
-            Assert.ThrowsException<Exception>(() =>
+            Assert.ThrowsException<Exception>((Action)(() =>
             {
-                new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
-            });
+                new Lib.Detectors.MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
+            }));
         }
 
         /// <summary>
@@ -137,10 +137,10 @@ namespace Sortzam.Tests
             Settings settings = Settings.Instance;
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "dfeghrtyhrghdfsghdrgfshrh.mp3");
-            Assert.ThrowsException<FileNotFoundException>(() =>
+            Assert.ThrowsException<FileNotFoundException>((Action)(() =>
             {
-                new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
-            });
+                new Lib.Detectors.MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
+            }));
         }
     }
 }

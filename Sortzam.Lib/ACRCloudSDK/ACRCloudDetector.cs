@@ -1,18 +1,19 @@
-﻿using Sortzam.Lib.ACRCloudSDK;
-using Sortzam.Lib.DataAccessObjects;
+﻿using Sortzam.Lib.DataAccessObjects;
+using Sortzam.Lib.Detectors;
 using System;
 using System.Collections.Generic;
 
-namespace Sortzam.Lib.Detectors
+namespace Sortzam.Lib.ACRCloudSDK
 {
     /// <summary>
     /// Music Tag ID3 and meta datas loader from CRCloud API
     /// </summary>
-    public class MusicTagDetector
+    public class ACRCloudDetector : IDetector
     {
         private readonly string _apiKey;
         private readonly string _apiHost;
         private readonly string _apiSecretKey;
+
 
         /// <summary>
         /// Instance the detector using CRCloud API
@@ -20,14 +21,16 @@ namespace Sortzam.Lib.Detectors
         /// <param name="apiHost">host of CRCloud api</param>
         /// <param name="apiKey">api Key to authenticate API</param>
         /// <param name="apiSecretKey">secret Key to authenticate API</param>
-        public MusicTagDetector(string apiHost, string apiKey, string apiSecretKey)
+        public ACRCloudDetector(string apiHost, string apiKey, string apiSecretKey)
         {
             if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(apiHost) || string.IsNullOrEmpty(apiSecretKey))
                 throw new Exception("API Key and Api Host and Api Secret Key are required");
+
             _apiHost = apiHost;
             _apiSecretKey = apiSecretKey;
             _apiKey = apiKey;
         }
+
 
         /// <summary>
         /// Recognize tag ID3 and metas datas music, from an audio file path
@@ -61,6 +64,7 @@ namespace Sortzam.Lib.Detectors
                 3015 => "Could not generate fingerprint",
                 _ => stuff?.status?.msg?.ToString() ?? "Unknow Error",
             };
+
             throw new Exception(error);
         }
 
@@ -68,7 +72,7 @@ namespace Sortzam.Lib.Detectors
         {
             List<MusicDao> result = new List<MusicDao>();
 
-            foreach (var i in jsonResult.music)
+            foreach (dynamic i in jsonResult.music)
                 result.Add(new MusicDao().MapJson(i));
 
             return result;

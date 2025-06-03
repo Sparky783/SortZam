@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TagLib.Matroska;
 using Tools.Comparer;
 using Tools.Utils;
 
@@ -40,7 +39,7 @@ namespace Sortzam.Cmd
             if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
                 throw new Exception("Not found path");
 
-            IEnumerable<MusicFileDao> musicFiles = new MusicFileDaoDetector().Search(new List<string>() { path });
+            IEnumerable<MusicFileDao> musicFiles = new MusicFileDao().Search(new List<string>() { path });
 
             foreach (MusicFileDao musicFile in musicFiles)
             {
@@ -120,7 +119,7 @@ namespace Sortzam.Cmd
                 ", ",
             };
 
-            IEnumerable<MusicFileDao> musicFiles = new MusicFileDaoDetector().Search(new List<string>() { path });
+            IEnumerable<MusicFileDao> musicFiles = new MusicFileDao().Search(new List<string>() { path });
             List<MusicFileDao> musicFilesErrors = musicFiles.Where(p => searchValues.Any(k => p.Artist.Contains(k))).ToList();
 
             foreach (MusicFileDao musicFile in musicFilesErrors)

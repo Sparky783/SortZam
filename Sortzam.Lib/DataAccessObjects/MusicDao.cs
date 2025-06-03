@@ -2,15 +2,20 @@
 
 namespace Sortzam.Lib.DataAccessObjects
 {
+    /// <summary>
+    /// Represent a music
+    /// </summary>
     public class MusicDao
     {
+        #region Properties
         public string Artist { get; set; }
         public string Title { get; set; }
         public string Kind { get; set; }
         public string Album { get; set; }
         public string Comment { get; set; }
         public int? Year { get; set; }
-        public MusicDao() { }
+        #endregion
+
 
         /// <summary>
         /// Map a Json object into a MusicDao object
@@ -19,18 +24,24 @@ namespace Sortzam.Lib.DataAccessObjects
         /// <returns></returns>
         public MusicDao MapJson(dynamic jsonObject)
         {
-            var artist = "";
+            string artist = "";
+
             if (jsonObject.artists != null)
+            {
                 for (var i = 0; i < jsonObject.artists.Count; i++)
                     artist += string.Format("{0}{1}", i == 0 ? "" : "/", jsonObject.artists[i].name);
+            }
 
-            var genre = "";
+            string genre = "";
+
             if (jsonObject.genres != null)
+            {
                 for (var i = 0; i < jsonObject.genres.Count; i++)
                     genre += string.Format("{0}{1}", i == 0 ? "" : "/", jsonObject.genres[i].name);
+            }
 
             int year;
-            var t = int.TryParse(jsonObject.release_date?.ToString()?.Split('-')[0], out year);
+            int.TryParse(jsonObject.release_date?.ToString()?.Split('-')[0], out year);
 
             return new MusicDao()
             {
