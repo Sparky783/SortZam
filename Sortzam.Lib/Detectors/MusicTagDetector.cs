@@ -28,10 +28,6 @@ namespace Sortzam.Lib.Detectors
             _apiSecretKey = apiSecretKey;
             _apiKey = apiKey;
         }
-        public IEnumerable<MusicDao> Search(string search)
-        {
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// Recognize tag ID3 and metas datas music, from an audio file path
@@ -42,9 +38,9 @@ namespace Sortzam.Lib.Detectors
         public IEnumerable<MusicDao> Recognize(string filePath)
         {
             // TODO : check duration file before start to 30s
-            var recognizer = new ACRCloudRecognizer(_apiHost, _apiKey, _apiSecretKey);
-            var stuff = recognizer.RecognizeByFile(filePath, 100);
-            var code = int.Parse(stuff.status?.code?.ToString() ?? "0");
+            ACRCloudRecognizer recognizer = new ACRCloudRecognizer(_apiHost, _apiKey, _apiSecretKey);
+            dynamic stuff = recognizer.RecognizeByFile(filePath, 100);
+            dynamic code = int.Parse(stuff.status?.code?.ToString() ?? "0");
 
             // If match and no error code
             if (stuff != null && stuff.metadata != null && code == 0)
@@ -55,7 +51,7 @@ namespace Sortzam.Lib.Detectors
                 return null;
 
             // If an  other error occurs
-            var error = int.Parse(stuff.status.code.ToString()) switch
+            dynamic error = int.Parse(stuff.status.code.ToString()) switch
             {
                 3001 => "Missing/Invalid Access Key",
                 3002 => "Invalid ContentType. valid Content-Type is multipart/form-data",
@@ -67,11 +63,14 @@ namespace Sortzam.Lib.Detectors
             };
             throw new Exception(error);
         }
+
         private IEnumerable<MusicDao> Map(dynamic jsonResult)
         {
-            var result = new List<MusicDao>();
+            List<MusicDao> result = new List<MusicDao>();
+
             foreach (var i in jsonResult.music)
                 result.Add(new MusicDao().MapJson(i));
+
             return result;
         }
     }

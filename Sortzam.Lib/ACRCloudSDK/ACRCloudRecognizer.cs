@@ -22,6 +22,7 @@ namespace Sortzam.Lib.ACRCloudSDK
         {
             if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(accessKey) || string.IsNullOrEmpty(accessSecret))
                 throw new Exception("ACRCloud API : Host, AccessKey and AccessSecret are required fields");
+
             _host = host;
             _accessKey = accessKey;
             _accessSecret = accessSecret;
@@ -38,8 +39,10 @@ namespace Sortzam.Lib.ACRCloudSDK
         public dynamic Recognize(byte[] wavAudioBuffer, int wavAudioBufferLen)
         {
             byte[] fp = _acrTool.CreateFingerprint(wavAudioBuffer, wavAudioBufferLen, false);
+
             if (fp == null)
                 return null;
+
             return JsonConvert.DeserializeObject(DoRecognize(fp));
         }
 
@@ -57,8 +60,10 @@ namespace Sortzam.Lib.ACRCloudSDK
                 throw new FileNotFoundException("Audio file not found : " + filePath);
 
             byte[] fp = _acrTool.CreateFingerprintByFile(filePath, startSeconds, _audioLengthSecond, false);
+
             if (fp == null)
                 return null;
+
             return JsonConvert.DeserializeObject(DoRecognize(fp));
         }
 
@@ -74,10 +79,13 @@ namespace Sortzam.Lib.ACRCloudSDK
         public dynamic RecognizeByFileBuffer(byte[] fileBuffer, int fileBufferLen, int startSeconds)
         {
             byte[] fp = _acrTool.CreateFingerprintByFileBuffer(fileBuffer, fileBufferLen, startSeconds, _audioLengthSecond, false);
+            
             if (fp == null)
                 return null;
+
             return JsonConvert.DeserializeObject(DoRecognize(fp));
         }
+
         private string DoRecognize(byte[] queryData)
         {
             string method = "POST";
@@ -91,33 +99,36 @@ namespace Sortzam.Lib.ACRCloudSDK
             string sigStr = method + "\n" + httpURL + "\n" + _accessKey + "\n" + dataType + "\n" + sigVersion + "\n" + timestamp;
             string signature = EncryptByHMACSHA1(sigStr, _accessSecret);
 
-            var dict = new Dictionary<string, object>();
+            Dictionary<string, object> dict = new Dictionary<string, object>();
             dict.Add("access_key", _accessKey);
             dict.Add("sample_bytes", queryData.Length.ToString());
             dict.Add("sample", queryData);
             dict.Add("timestamp", timestamp);
             dict.Add("signature", signature);
             dict.Add("data_type", dataType);
+
             dict.Add("signature_version", sigVersion);
             return PostHttp(reqURL, dict);
         }
+
         private string PostHttp(string url, IDictionary<string, Object> postParams)
         {
             string result = "";
 
             string BOUNDARYSTR = "acrcloud***copyright***2015***" + DateTime.Now.Ticks.ToString("x");
             string BOUNDARY = "--" + BOUNDARYSTR + "\r\n";
-            var ENDBOUNDARY = Encoding.ASCII.GetBytes("--" + BOUNDARYSTR + "--\r\n\r\n");
+            byte[] ENDBOUNDARY = Encoding.ASCII.GetBytes("--" + BOUNDARYSTR + "--\r\n\r\n");
 
-            var stringKeyHeader = BOUNDARY +
+            string stringKeyHeader = BOUNDARY +
                            "Content-Disposition: form-data; name=\"{0}\"" +
                            "\r\n\r\n{1}\r\n";
-            var filePartHeader = BOUNDARY +
+            string filePartHeader = BOUNDARY +
                             "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"\r\n" +
                             "Content-Type: application/octet-stream\r\n\r\n";
 
-            var memStream = new MemoryStream();
-            foreach (var item in postParams)
+            MemoryStream memStream = new MemoryStream();
+
+            foreach (KeyValuePair<string, object> item in postParams)
             {
                 if (item.Value is string)
                 {
@@ -135,12 +146,14 @@ namespace Sortzam.Lib.ACRCloudSDK
                     memStream.Write(Encoding.UTF8.GetBytes("\r\n"), 0, 2);
                 }
             }
+
             memStream.Write(ENDBOUNDARY, 0, ENDBOUNDARY.Length);
 
             HttpWebRequest request = null;
             HttpWebResponse response = null;
             Stream writer = null;
             StreamReader myReader = null;
+
             try
             {
                 request = (HttpWebRequest)WebRequest.Create(url);
@@ -169,34 +182,41 @@ namespace Sortzam.Lib.ACRCloudSDK
                     memStream.Close();
                     memStream = null;
                 }
+
                 if (writer != null)
                 {
                     writer.Close();
                     writer = null;
                 }
+
                 if (myReader != null)
                 {
                     myReader.Close();
                     myReader = null;
                 }
+
                 if (request != null)
                 {
                     request.Abort();
                     request = null;
                 }
+
                 if (response != null)
                 {
                     response.Close();
                     response = null;
                 }
             }
+
             return result;
         }
+
         private string EncryptByHMACSHA1(string input, string key)
         {
             HMACSHA1 hmac = new HMACSHA1(System.Text.Encoding.UTF8.GetBytes(key));
             byte[] stringBytes = Encoding.UTF8.GetBytes(input);
             byte[] hashedValue = hmac.ComputeHash(stringBytes);
+
             return EncodeToBase64(hashedValue);
         }
 

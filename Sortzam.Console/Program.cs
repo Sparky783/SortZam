@@ -4,10 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using TagLib.Matroska;
 using Tools.Comparer;
 using Tools.Utils;
-using Sortzam.Ihm.Models;
 
 namespace Sortzam.Cmd
 {
@@ -18,13 +17,16 @@ namespace Sortzam.Cmd
             Console.WriteLine("Tap a number to select a function :");
             Console.WriteLine("1 -> Analyze a directory");
             Console.WriteLine("2 -> Rewrite Artists tag using featuring field");
-            var choice = Console.ReadLine();
+
+            string choice = Console.ReadLine();
+
             switch (choice)
             {
                 case "1": Analyze(); break;
                 case "2": RewriteArtist(); break;
                 default: Console.WriteLine("Command unknow"); break;
             }
+
             Console.ReadLine();
         }
 
@@ -33,60 +35,72 @@ namespace Sortzam.Cmd
             Settings settings = Settings.Instance;
 
             Console.WriteLine("Please enter the directory path to analyze : ");
-            var path = PathUtils.Normalize(Console.ReadLine());
+            string path = PathUtils.Normalize(Console.ReadLine());
+
             if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
                 throw new Exception("Not found path");
 
-            var files = new MusicFileDaoDetector().Search(new List<string>() { path });
-            foreach (var i in files)
+            IEnumerable<MusicFileDao> musicFiles = new MusicFileDaoDetector().Search(new List<string>() { path });
+
+            foreach (MusicFileDao musicFile in musicFiles)
             {
-                IEnumerable<MusicDao> tag = null;
+                IEnumerable<MusicDao> tags = null;
+
                 try
                 {
-                    tag = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(i.Path);
+                    tags = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(musicFile.Path);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("File audio error : " + i.Path);
+                    Console.WriteLine("File audio error : " + musicFile.Path);
                     Console.WriteLine(e.Message);
                     continue;
                 }
-                if (tag == null || tag.Count() <= 0)
+
+                if (tags == null || tags.Count() <= 0)
                 {
-                    Console.WriteLine("File not recognized : " + i.Path);
+                    Console.WriteLine("File not recognized : " + musicFile.Path);
                     continue;
                 }
-                Console.WriteLine("File recognized : " + i.Path);
 
-                if (tag.Count() == 1)
-                    i.Map(tag.First());
+                Console.WriteLine("File recognized : " + musicFile.Path);
+
+                if (tags.Count() == 1)
+                {
+                    musicFile.Map(tags.First());
+                }
                 else
                 {
                     int nbMin = int.MaxValue;
                     MusicDao tagMin = null;
-                    foreach (var j in tag)
+
+                    foreach (MusicDao tag in tags)
                     {
-                        var nb = LevenshteinDistance.Compute(i.FileName, string.Format("{0} - {1}", j.Artist, j.Title));
+                        int nb = LevenshteinDistance.Compute(musicFile.FileName, string.Format("{0} - {1}", tag.Artist, tag.Title));
+
                         if (nb < nbMin)
                         {
                             nbMin = nb;
-                            tagMin = j;
+                            tagMin = tag;
                         }
                     }
-                    i.Map(tagMin);
+
+                    musicFile.Map(tagMin);
                 }
-                i.Save();
+
+                musicFile.Save();
             }
         }
 
         static void RewriteArtist()
         {
             Console.WriteLine("Please enter the directory path to analyze : ");
-            var path = PathUtils.Normalize(Console.ReadLine());
+            string path = PathUtils.Normalize(Console.ReadLine());
+
             if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
                 throw new Exception("Not found path");
 
-            var searchValues = new List<string>() {
+            List<string> searchValues = new List<string>() {
                 " featuring. ",
                 " featuring ",
                 " Feat. ",
@@ -106,25 +120,28 @@ namespace Sortzam.Cmd
                 ", ",
             };
 
-            var files = new MusicFileDaoDetector().Search(new List<string>() { path });
-            var filesErrors = files.Where(p => searchValues.Any(k => p.Artist.Contains(k))).ToList();
+            IEnumerable<MusicFileDao> musicFiles = new MusicFileDaoDetector().Search(new List<string>() { path });
+            List<MusicFileDao> musicFilesErrors = musicFiles.Where(p => searchValues.Any(k => p.Artist.Contains(k))).ToList();
 
-            foreach (var file in filesErrors)
+            foreach (MusicFileDao musicFile in musicFilesErrors)
             {
                 Console.Clear();
                 Console.WriteLine("Choose a proposition OR tap 0 to enter it yourself OR leave empty to continue next :");
                 Console.WriteLine("");
-                Console.WriteLine(string.Format("Original : {0} - {1}", file.Artist, file.Title));
+                Console.WriteLine(string.Format("Original : {0} - {1}", musicFile.Artist, musicFile.Title));
 
                 // Artist modelize
-                var artist = file.Artist;
-                while (searchValues.Any(p => artist.Contains(p)))
+                string artist = musicFile.Artist;
+
+                while (searchValues.Any(value => artist.Contains(value)))
                 {
-                    var artistList = new List<string>() { };
-                    foreach (var res in artist.Split("/"))
+                    List<string> artistList = new List<string>() { };
+
+                    foreach (string res in artist.Split("/"))
                     {
-                        var found = false;
-                        foreach (var search in searchValues)
+                        bool found = false;
+
+                        foreach (string search in searchValues)
                         {
                             if (res.Contains(search))
                             {
@@ -132,14 +149,16 @@ namespace Sortzam.Cmd
                                 artistList.AddRange(res.Split(search));
                             }
                         }
+
                         if (!found)
                             artistList.Add(res);
                     }
-                    artist = artistList.Where(p => !string.IsNullOrEmpty(p)).Select(p => p.Trim()).Distinct().ToString("/", false);
+
+                    artist = artistList.Where(a => !string.IsNullOrEmpty(a)).Select(a => a.Trim()).Distinct().ToString("/", false);
                 }
 
-                Console.WriteLine(string.Format("Nouveau : {0} - {1}", artist, file.Title));
-                var choice = Console.ReadLine();
+                Console.WriteLine(string.Format("Nouveau : {0} - {1}", artist, musicFile.Title));
+                string choice = Console.ReadLine();
 
                 if (string.IsNullOrEmpty(choice))
                     continue;
@@ -147,13 +166,14 @@ namespace Sortzam.Cmd
                 if (choice == "0")
                 {
                     Console.WriteLine("Artist : ");
-                    file.Artist = Console.ReadLine();
-                    file.Save();
+                    musicFile.Artist = Console.ReadLine();
+                    musicFile.Save();
                 }
+
                 if (choice == "1")
                 {
-                    file.Artist = artist;
-                    file.Save();
+                    musicFile.Artist = artist;
+                    musicFile.Save();
                 }
             }
         }

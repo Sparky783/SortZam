@@ -8,13 +8,16 @@ namespace Sortzam.Lib.TagSDK
     {
         private string _path;
         private File _file;
+
         public Id3TagEditor(string path)
         {
             if (string.IsNullOrEmpty(path) || !FileUtils.Exists(path))
                 throw new System.IO.FileNotFoundException("File not Found", path);
+
             _path = path;
             _file = File.Create(_path);
         }
+
         public Tag Load()
         {
             return _file?.Tag;

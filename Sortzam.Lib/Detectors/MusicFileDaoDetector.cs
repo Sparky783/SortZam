@@ -44,16 +44,6 @@ namespace Sortzam.Lib.Detectors
         }
 
         /// <summary>
-        /// Load Meta datas for music file path, where the extension is known
-        /// </summary>
-        /// <param name="directoryPath">path to start research (recursively subdirectories)</param>
-        /// <returns></returns>
-        public IEnumerable<MusicFileDao> SearchFiles(List<string> pathFiles)
-        {
-            return LoadMetaDatas(_musicFileDetector.SearchFiles(pathFiles));
-        }
-
-        /// <summary>
         /// Load Meta datas for music file path or files in a directory and subdirectories, where the extension is known
         /// </summary>
         /// <param name="pathFiles"></param>
@@ -64,15 +54,17 @@ namespace Sortzam.Lib.Detectors
         }
 
 
-
         private IEnumerable<MusicFileDao> LoadMetaDatas(IEnumerable<FileInfo> pathFiles)
         {
             if (pathFiles == null)
                 return null;
-            var result = new List<MusicFileDao>();
-            foreach (var i in pathFiles.Where(p => p != null && p.Exists))
+
+            List<MusicFileDao> result = new List<MusicFileDao>();
+
+            foreach (FileInfo pathFile in pathFiles.Where(p => p != null && p.Exists))
             {
-                var music = new MusicFileDao(i.FullName);
+                MusicFileDao music = new MusicFileDao(pathFile.FullName);
+
                 try
                 {
                     music.Load();
@@ -80,6 +72,7 @@ namespace Sortzam.Lib.Detectors
                 }
                 catch (Exception e) { } // IF metas datas are not foundable or if file is corrupted
             }
+
             return result;
         }
     }
