@@ -1,5 +1,7 @@
-﻿using Sortzam.Lib.DataAccessObjects;
-using Sortzam.Lib.Detectors;
+﻿using Sortzam.Ihm.Models;
+using Sortzam.Lib;
+using Sortzam.Lib.ACRCloudSDK;
+using Sortzam.Lib.DataAccessObjects;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,7 +41,7 @@ namespace Sortzam.Cmd
             if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
                 throw new Exception("Not found path");
 
-            IEnumerable<MusicFileDao> musicFiles = new MusicFileDao().Search(new List<string>() { path });
+            IEnumerable<MusicFileDao> musicFiles = new MusicFileSearcher().Search(new List<string>() { path });
 
             foreach (MusicFileDao musicFile in musicFiles)
             {
@@ -47,7 +49,7 @@ namespace Sortzam.Cmd
 
                 try
                 {
-                    tags = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(musicFile.Path);
+                    tags = new ACRCloudDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(musicFile.Path);
                 }
                 catch (Exception e)
                 {
@@ -119,7 +121,7 @@ namespace Sortzam.Cmd
                 ", ",
             };
 
-            IEnumerable<MusicFileDao> musicFiles = new MusicFileDao().Search(new List<string>() { path });
+            IEnumerable<MusicFileDao> musicFiles = new MusicFileSearcher().Search(new List<string>() { path });
             List<MusicFileDao> musicFilesErrors = musicFiles.Where(p => searchValues.Any(k => p.Artist.Contains(k))).ToList();
 
             foreach (MusicFileDao musicFile in musicFilesErrors)
