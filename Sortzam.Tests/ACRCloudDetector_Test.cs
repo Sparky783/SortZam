@@ -1,15 +1,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sortzam.Ihm.Models;
-using Sortzam.Lib.Detectors;
+using Sortzam.Lib.ACRCloudSDK;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace Sortzam.Tests
 {
     [TestClass]
-    public class MusicTagDetector_Test
+    public class ACRCloudDetector_Test
     {
         /// <summary>
         /// Testing recognition music from true mp3 file
@@ -20,7 +19,7 @@ namespace Sortzam.Tests
             Settings settings = Settings.Instance;
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "test1.mp3");
-            var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
+            var result = new ACRCloudDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("I Like It")));
             Assert.IsTrue(result.Any(p => p.Artist.Contains("Enrique Iglesias")));
@@ -38,7 +37,7 @@ namespace Sortzam.Tests
             Settings settings = Settings.Instance;
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "subdirectory", "Tout le monde Danse.wav");
-            var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
+            var result = new ACRCloudDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("Tout le monde danse")));
             Assert.IsTrue(result.Any(p => p.Artist.Contains("Fally Ipupa")));
@@ -56,7 +55,7 @@ namespace Sortzam.Tests
             Settings settings = Settings.Instance;
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "subdirectory", "05 Meet Her At The Loveparade.m4a");
-            var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
+            var result = new ACRCloudDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("Meet Her At The Loveparade")));
             Assert.IsTrue(result.Any(p => p.Artist.Contains("Da Hool")));
@@ -74,7 +73,7 @@ namespace Sortzam.Tests
             Settings settings = Settings.Instance;
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "subdirectory", "subsubdirectory", "Robin Schulz - In Your Eyes (feat. Alida).flac");
-            var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
+            var result = new ACRCloudDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("In Your Eyes")));
             Assert.IsTrue(result.Any(p => p.Artist.Contains("Alida/Robin Schulz")));
@@ -91,7 +90,7 @@ namespace Sortzam.Tests
             Settings settings = Settings.Instance;
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "subdirectory", "Taio Cruz - Break Your Heart.wma");
-            var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
+            var result = new ACRCloudDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(p => p.Title.Contains("Break Your Heart")));
             Assert.IsTrue(result.Any(p => p.Artist.Contains("Taio Cruz")));
@@ -109,7 +108,7 @@ namespace Sortzam.Tests
             Settings settings = Settings.Instance;
 
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "test2.mp3");
-            var result = new MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
+            var result = new ACRCloudDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             Assert.IsNull(result);
         }
 
@@ -124,7 +123,7 @@ namespace Sortzam.Tests
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "test3.mp3");
             Assert.ThrowsException<Exception>((Action)(() =>
             {
-                new Lib.Detectors.MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
+                new ACRCloudDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             }));
         }
 
@@ -139,7 +138,7 @@ namespace Sortzam.Tests
             var data = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "datas", "dfeghrtyhrghdfsghdrgfshrh.mp3");
             Assert.ThrowsException<FileNotFoundException>((Action)(() =>
             {
-                new Lib.Detectors.MusicTagDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
+                new ACRCloudDetector(settings.ApiHost, settings.ApiKey, settings.SecretKey).Recognize(data);
             }));
         }
     }
